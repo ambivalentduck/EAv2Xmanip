@@ -4,6 +4,7 @@
 
 #define targetDuration .5
 #define oRadius min/80
+#define calRadius min/40
 #define cRadius min/40
 #define tRadius min/40
 #define TAB << "\t" <<
@@ -17,12 +18,12 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	
 	setFocus(); //Foreground window that gets all X input
 	
-	center=point(-0.019,0.53); //Known from direct observation, do not change
+	center=point((LEFT+RIGHT)/2l,(TOP+BOTTOM)/2l); //Known from direct observation, do not change
 	cursor=center;
 	origin=center;
 	//state=acquireTarget;
 	
-	min=.288; //Screen diameter (shortest dimension) known from direct observation, do not change
+	min=(fabs(LEFT-RIGHT)>fabs(TOP-BOTTOM)?fabs(TOP-BOTTOM):fabs(LEFT-RIGHT)); //Screen diameter (shortest dimension) known from direct observation, do not change
 	target=point(5,5);
 	
 	//Snag a UDP Socket and call a function (readPending) every time there's a new packet.
@@ -45,7 +46,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	
 	layout->addRow(tr("Trial Number:"), trialNumBox=new QSpinBox(this));
 	trialNumBox->setValue(0);
-	trialNumBox->setMaximum(1000);
+	trialNumBox->setMaximum(5000);
 	trialNumBox->setMinimum(0);
 	grayList.push_back(trialNumBox);
 	connect(trialNumBox, SIGNAL(valueChanged(int)), this, SLOT(setTrialNum(int)));
@@ -54,6 +55,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	stimulusBox->insertItem(0,"Unstimulated");
 	stimulusBox->insertItem(1,"Curl");
 	stimulusBox->insertItem(2,"Saddle");
+	stimulusBox->insertItem(3,"Rotation 45");
 	grayList.push_back(stimulusBox);
 	stimulus=UNSTIMULATED;
 	connect(stimulusBox, SIGNAL(activated(int)), this, SLOT(setStimulus(int)));
@@ -85,23 +87,35 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	sphereVec.clear();
 	sphere.color=point(.5,.5,.5);
 	sphere.position=center;
-	sphere.radius=min/2;
+	sphere.radius=min/2l;
 	sphereVec.push_back(sphere);
+	sphere.color=point(1,0,0);
+	sphere.position=center;
+	sphere.radius=calRadius;
+	sphereVec.push_back(sphere);
+	point unit(1,0);
+	for(double k=0;k<4;k++)
+	{
+		sphere.color=point(1,0,0);
+		sphere.position=center+unit.rotateZero(k*3.14159l/2l)*(min/2l);
+		sphere.radius=calRadius;
+		sphereVec.push_back(sphere);
+	}
 	sphere.color=point(.5,.5,.5); //Grey
 	sphere.position=point(LEFT,TOP);
-	sphere.radius=oRadius;
+	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
 	sphere.color=point(.5,.5,.5); //Grey
 	sphere.position=point(LEFT,BOTTOM);
-	sphere.radius=oRadius;
+	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
 	sphere.color=point(.5,.5,.5); //Grey
 	sphere.position=point(RIGHT,TOP);
-	sphere.radius=oRadius;
+	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
 	sphere.color=point(.5,.5,.5); //Grey
 	sphere.position=point(RIGHT,BOTTOM);
-	sphere.radius=oRadius;
+	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
 	userWidget->setSpheres(sphereVec);
 	
@@ -127,6 +141,7 @@ void ControlWidget::readPending()
 		out=QByteArray(in.data(),sizeof(double));//Copy the timestamp from the input
 		switch(stimulus)
 		{
+		case ROTATION45:
 		case UNSTIMULATED:
 			curl=0;
 			saddle=0;
@@ -162,11 +177,6 @@ void ControlWidget::readPending()
 	if(!leftOrigin) if (cursor.dist(origin)>(oRadius+cRadius)) leftOrigin=true;
 	
 	sphereVec.clear();
-	//origin
-	sphere.color=point(.5,.5,.5); //Grey
-	sphere.position=origin;
-	sphere.radius=oRadius;
-	sphereVec.push_back(sphere);
 	//Target
 	if(state!=inTarget) sphere.color=point(1,0,0); //Red
 	else
@@ -183,16 +193,23 @@ void ControlWidget::readPending()
 	sphereVec.push_back(sphere);
 	//Cursor
 	sphere.color=point(0,0,1); //Blue
+	
+	if (stimulus==ROTATION45) cursor=(cursor-center).rotateZero(-3.14159l/4l)+center;
+	
 	switch(treatment)
 	{
 		case UNTREATED:
 			sphere.position=cursor;
 			break;
 		case EA:
-			sphere.position=cursor+cursor.linepointvec(origin, target); //That 0 is origin-origin
+			sphere.position=cursor+cursor.linepointvec(origin, target); 
+			//cursor + the vector that points from the line intersecting both origin and target to the cursor.
 			break;
 		case X2:
-			sphere.position=cursor*2-center; //Doubles the distance between the cursor and origin
+			double mcorr=min-.02l;
+			sphere.position=cursor*2-(center-point(0,mcorr/6l));
+			//sphere.position=cursor*2-center;  //About zero. 
+			//Doubles the distance between the cursor and origin ONLY makes sense in the context of center-out reaching
 			break;
 	}
 	outStream << sphere.position.X() TAB sphere.position.Y() << endl;
@@ -218,7 +235,7 @@ void ControlWidget::readPending()
 				userWidget->setBars(times); */
 				
 				if(trial>=1) {target=loadTrial(trial+1);}
-				else target=(target==point(0,0)?point(0,min/2)+center:point(0,0));
+				else target=((target.dist(center)<(min/60l))?point(0,min/3l)+center:point(0,0)+center);
 				origin=sphere.position;
 				state=acquireTarget;
 				leftOrigin=false;
@@ -231,6 +248,7 @@ void ControlWidget::readPending()
 	out=QByteArray(in.data(),sizeof(double));//Copy the timestamp from the input
 	switch(stimulus)
 	{
+	case ROTATION45:
 	case UNSTIMULATED:
 		curl=0;
 		saddle=0;
@@ -282,7 +300,7 @@ void ControlWidget::startClicked()
 		contFile.open(QIODevice::Append);
 		outStream.setDevice(&contFile);
 		trialStream.setDevice(&trialFile);	
-		target=targets->genTarget(cursor-center)+center;
+		target=center;
 	}
 	ExperimentRunning=true;
 	ignoreInput=false;
@@ -319,11 +337,10 @@ point ControlWidget::loadTrial(int T)
 	{
 		trialFile.readLine(line,200);
 		std::cout << line << std::endl;
-		if(sscanf(line, "%d\t%d\t%d\t%e\t%e",&temptrial,&temptreat,&tempstim,&tempx,&tempy));
+		if(sscanf(line, "%d\t%d\t%d\t%lf\t%lf",&temptrial,&temptreat,&tempstim,&tempx,&tempy));
 		else
 		{
-			if(sscanf(line, "reset targets %d",&temptrial)) targets->reset(temptrial);
-			else {std::cout << "Complete failure to read line: " << line << std::endl; return center;}
+			std::cout << "Complete failure to read line: " << line << std::endl; return center;
 		}
 	} while ((temptrial < T)&&(!trialFile.atEnd()));
 	
@@ -332,29 +349,9 @@ point ControlWidget::loadTrial(int T)
 	trialNumBox->setValue(T);
 	stimulusBox->setCurrentIndex(tempstim);
 	treatmentBox->setCurrentIndex(temptreat);
-	std::cout << "Finished Loading Trial " << temptrial << std::endl;	
-	return point(tempx,tempy)/min+center;
-}
-
-void ControlWidget::noConsecutive(bool * array, int n)
-{
-	bool swap;
-	int r;
-	bool fail=false;
-	do
-	{
-		fail=false;
-		for(int k=0;k<(n-1);k++)
-			if(array[k]&&array[k+1])
-			{
-				fail = true;
-				r=randint(0,n-1);
-				swap=array[k];
-				array[k]=array[r];
-				array[r]=swap;
-				break;
-			}
-	} while(fail);
+	std::cout << "Finished Loading Trial " << temptrial << std::endl;
+	double mcorr=min-.02l;
+	return point(tempx,-tempy)*(mcorr/1.5l)+center-point(0,mcorr/6l);
 }
 
 

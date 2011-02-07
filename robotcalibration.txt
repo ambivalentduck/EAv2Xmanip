@@ -1,0 +1,14 @@
+Calibration procedure:
+Put a red dot in center of screen, put handle under it.  Camera is "at" red dot.  Z is -1.39 m.
+--glOrtho(LEFT,RIGHT,BOTTOM,TOP,1,-1);  
+Put a dot at [(LEFT+RIGHT)/2l,(TOP+BOTTOM)/2l, 0]
+What does the robot report when the dot is hitting the arm? (Lift the screen and type it here)
+X: 0
+Y: .456
+
+--gluPerspective(phi, fabs(LEFT-RIGHT)/fabs(TOP-BOTTOM), 0, 1);
+phi is arcsin(abs(TOP-BOTTOM)/1.39)*180/PI, this number is in degrees
+
+--gluLookAt((LEFT+RIGHT)/2l,(TOP+BOTTOM)/2l,-1.39,(LEFT+RIGHT)/2l,(TOP+BOTTOM)/2l,0,0,-1,0);
+Place the camera 1.39m above the center of the screen, looking at the point you determined, towards the robot is up.
+-.099194,.5955l,1.39l,0l,.456l,0l,0l,-1l,0l
