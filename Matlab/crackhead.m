@@ -7,4 +7,4 @@ end
 
 subject=varargin{1};
 
-out=1:length(subject.trials);
+out=1:length(subject.trial);
