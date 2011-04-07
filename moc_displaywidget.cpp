@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'displaywidget.h'
 **
-** Created: Thu Oct 28 19:01:53 2010
+** Created: Mon Dec 20 19:01:07 2010
 **      by: The Qt Meta Object Compiler version 62 (Qt 4.6.2)
 **
 ** WARNING! All changes made in this file will be lost!
