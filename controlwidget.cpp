@@ -29,7 +29,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	//Snag a UDP Socket and call a function (readPending) every time there's a new packet.
 	ignoreInput=true;
 	us=new QUdpSocket(this);
-	us->bind(QHostAddress("192.168.0.1"),25000,QUdpSocket::DontShareAddress); //Bind the IP and socket you expect packets to be received from XPC on.
+	us->bind(QHostAddress("192.168.1.1"),25000,QUdpSocket::DontShareAddress); //Bind the IP and socket you expect packets to be received from XPC on.
 	connect(us, SIGNAL(readyRead()),this, SLOT(readPending()));
 	
 	layout = new QFormLayout(this);
@@ -159,7 +159,7 @@ void ControlWidget::readPending()
 		out.append(reinterpret_cast<char*>(&curl),sizeof(double));
 		out.append(reinterpret_cast<char*>(&saddle),sizeof(double));
 		//This will require additional appends for other stimuli
-		us->writeDatagram(out.data(),out.size(),QHostAddress("192.168.0.2"),25000);
+		us->writeDatagram(out.data(),out.size(),QHostAddress("192.168.1.2"),25000);
 		return;
 	}
 	
@@ -266,7 +266,7 @@ void ControlWidget::readPending()
 	out.append(reinterpret_cast<char*>(&curl),sizeof(double));
 	out.append(reinterpret_cast<char*>(&saddle),sizeof(double));
 	//This will require additional appends for other stimuli
-	us->writeDatagram(out.data(),out.size(),QHostAddress("192.168.0.2"),25000);
+	us->writeDatagram(out.data(),out.size(),QHostAddress("192.168.1.2"),25000);
 }
 
 void ControlWidget::startClicked()
@@ -345,13 +345,15 @@ point ControlWidget::loadTrial(int T)
 	} while ((temptrial < T)&&(!trialFile.atEnd()));
 	
 	stimulus=stimuli(tempstim);
+	point temppoint=point(tempx,-tempy);
+	if (temptreat==3) {temptreat=2; temppoint*=2;}
 	treatment=treatments(temptreat);
 	trialNumBox->setValue(T);
 	stimulusBox->setCurrentIndex(tempstim);
 	treatmentBox->setCurrentIndex(temptreat);
 	std::cout << "Finished Loading Trial " << temptrial << std::endl;
 	double mcorr=min-.02l;
-	return point(tempx,-tempy)*(mcorr/1.5l)+center-point(0,mcorr/6l);
+	return temppoint*(mcorr/1.5l)+center-point(0,mcorr/6l);
 }
 
 
