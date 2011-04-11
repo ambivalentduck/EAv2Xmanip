@@ -4,13 +4,11 @@ name=varargin{1};
 
 output=cell(1,1);
 
-load([matData,name,'.mat']);
+load(['../Data/',name,'.mat']);
 
-k=0;
-while 1
-    k=k+1;
-    if isa(varargin{k+1},'function_handle') %If argument 2,3,4...etc is a functional handle, run it on the data and store it
-        output{k}=feval(varargin{k+1},subject);
+for k=2:length(varargin)
+    if isa(varargin{k},'function_handle') %If argument 2,3,4...etc is a functional handle, run it on the data and store it
+        output{k-1}=feval(varargin{k},subject);
     else
         break;
     end
@@ -29,30 +27,22 @@ hold on
 %initalize
 aftereffects=zeros(lo,1);
 learningStarttoFinish=zeros(lo,1);
-learning2=zeros(lo,1);
 learning3=zeros(lo,1);
-learning4=zeros(lo,1);
-chunksize=5;
+
+f=find([subject.trial(subject.block(2).trials).stim]~=0);
+exes2=subject.block(2).trials(f);
+f=find([subject.trial(subject.block(2).trials).stim]==0);
+dots2=subject.block(2).trials(f);
 
 for o=1:lo
-    subset=subject.block(2).trials;
-    exes2=subset([subject.trials(subset).constrain]==1);
-    learning2(o)=regressNotZero(exes2,output{o}(exes2));
+    sub=[subject.block(1).trials(end-9:end) subject.block(5).trials(1:10)];
+    aftereffects(o)=regressNotZero(sub,output{o}(sub));
 
     subset=subject.block(3).trials;
     learning3(o)=regressNotZero(subset,output{o}(subset));
 
-    subset=subject.block(4).trials;
-    exes4=subset([subject.trials(subset).constrain]==1);
-    learning4(o)=regressNotZero(exes4,output{o}(exes4));
-
-    subset=subject.block(5).trials;
-    exes5=subset([subject.trials(subset).constrain]==1);
-
-    learningStarttoFinish(o)=regressNotZero([exes2,exes5],output{o}([exes2,exes5]));
-
-    x=[subject.block(1).trials(end+1-chunksize:end) subject.block(6).trials(1:chunksize)];
-    aftereffects(o)=regressNotZero(x,output{o}(x));
+    sub=[exes2, subject.block(4).trials(end-length(exes2)+1:end)];
+    learningStarttoFinish(o)=regressNotZero(sub,output{o}(sub));
 end
 
 
@@ -86,35 +76,29 @@ end
 for k=1:lo
     for b=1:length(subject.block)
         subset=subject.block(b).trials(6:end-5);
-        exes=[subject.trials(subset).constrain]==1;
-        dots=[subject.trials(subset).constrain]==0;
+        if b~=2
+            dots=1:length(subset);
+            exes=[];
+        else
+            exes=find([subject.trial(subset).stim]~=0);
+            dots=find([subject.trial(subset).stim]==0);
+        end
         output_=output{k}(subset);
         plot(subset(dots),output_(dots)+(k-1),'b.')
         plot(subset(exes),output_(exes)+(k-1),'bx')
         for kk=1:5
-            if subject.trials(kk).constrain
-                symbol='x';
-            else
-                symbol='.';
-            end
+            symbol='.';
             plot(subject.block(b).trials(kk),output{k}(subject.block(b).trials(kk))+(k-1),[symbol,colors(kk)])
             plot(subject.block(b).trials(end-(kk-1)),output{k}(subject.block(b).trials(end-(kk-1)))+(k-1),[symbol,colors(6-kk)])
         end
 
-
-        if learningStarttoFinish(k)&&(b==5)
-            plot(centers(b),k-.5,'r*')
-        end
-        if learning2(k)&&(b==2)
+        if learningStarttoFinish(k)&&(b==4)
             plot(centers(b),k-.5,'r*')
         end
         if learning3(k)&&(b==3)
             plot(centers(b),k-.5,'r*')
         end
-        if learning4(k)&&(b==4)
-            plot(centers(b),k-.5,'r*')
-        end
-        if aftereffects(k)&&(b==6)
+        if aftereffects(k)&&(b==5)
             plot(centers(b),k-.5,'r*')
         end
     end
@@ -137,8 +121,10 @@ for k=1:length(subject.block)
         plus='+';
     end
     legends{k}=[subject.block(k).typeName,arrow,subject.block(k).stimName,plus,subject.block(k).treatName];
-    drawnow
 end
+legends{end-1}=[legends{end-1},' ',legends{end}];
+legends{end}=' ';
+
 
 xtick=zeros(length(subject.block),1);
 
