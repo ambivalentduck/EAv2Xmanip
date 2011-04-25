@@ -80,10 +80,10 @@ for k=matexists'
     toc
 end
 
-[p,table,stats]=anova1(aftereffectsvals,aftereffectsgroup)
-c=multcompare(stats,'alpha',.1)
+[p,table,stats]=anova1(abs(aftereffectsvals),aftereffectsgroup)
+c=multcompare(stats,'alpha',.05)
 
 [p,table,stats]=anova1(learnSFvals,learnSFgroup)
-c=multcompare(stats,'alpha',.1)
+c=multcompare(stats,'alpha',.05)
 
 

@@ -84,7 +84,7 @@ for n=1:ns
     cumblocks=cumsum([1 blocks]);
     blockNames={'Warm-Up','Sporadically Stimulated','Stimulated and Treated','Stimulated and Untreated','Warm-Down'};
     stimNames={'','Curl','Saddle','Visual Rotation'};
-    treatNames={'','EA','2XHC', '2XVC'};
+    treatNames={'','EA','2XVC', '2XHC'};
 
     for k=1:length(blocks)
         subject.block(k).trials=cumblocks(k):cumblocks(k+1)-1;
