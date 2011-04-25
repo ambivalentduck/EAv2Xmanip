@@ -1,7 +1,8 @@
-clc
-clear all
+function fixbroken(file)
 
-[file,path]=uigetfile('../Data/*.dat');
+path='../Data/';
+
+%[file,path]=uigetfile('../Data/*.dat');
 fid=fopen([path,file]);
 fid2=fopen([path,'fixed.dat'],'w');
 
@@ -18,3 +19,5 @@ end
 fclose(fid);
 fclose(fid2);
 
+delete([path,file]);
+movefile([path,'fixed.dat'],[path,file]);

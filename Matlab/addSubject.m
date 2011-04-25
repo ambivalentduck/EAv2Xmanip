@@ -45,6 +45,12 @@ for n=1:ns
     input=load(['../Data/input',name,'.dat']);
     %trial, treat, stim, targetx, targety
     output=load(['../Data/output',name,'.dat']);
+    try
+        testaccess=output(f,13:14);
+    catch
+        fixbroken(['output',name,'.dat']);
+        output=load(['../Data/output',name,'.dat']);
+    end
     %trial TAB now-zero TAB cursor.X() TAB cursor.Y() TAB velocity.X() TAB
     %velocity.Y() TAB accel.X() TAB accel.Y() TAB origin.X() TAB origin.Y() TAB target.X() TAB target.Y();
     %outStream << sphere.position.X() TAB sphere.position.Y() << endl;
