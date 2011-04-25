@@ -79,9 +79,9 @@ for k=matexists'
 end
 
 [p,table,stats]=anova1(aftereffectsvals,aftereffectsgroup)
-c=multcompare(stats)
+c=multcompare(stats,'alpha',.1)
 
 [p,table,stats]=anova1(learnSFvals,learnSFgroup)
-c=multcompare(stats)
+c=multcompare(stats,'alpha',.1)
 
 
