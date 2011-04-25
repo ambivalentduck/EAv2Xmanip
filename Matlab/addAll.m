@@ -38,6 +38,7 @@ output={};
 c=0;
 toc
 for k=matexists'
+    k
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
     try
@@ -45,6 +46,7 @@ for k=matexists'
     catch
         subject.maxperpendicular=feval(@maxperpendicular,subject);
         save(['../Data/',num2str(k),'.mat'],'subject')
+        output{k}.rawvals=subject.maxperpendicular;
     end
         
     group{c}=subject.block(3).treatName;

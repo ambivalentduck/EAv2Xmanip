@@ -96,11 +96,9 @@ for n=1:ns
             if sum(find([subject.trial.treat]==1))>0
                 subject.block(k).treatName=treatNames{2};
             elseif sum(find([subject.trial.treat]==2))>0
-                if sum(find(abs(input(:,5))>.75))>0
-                    subject.block(k).treatName=treatNames{3};
-                else
-                    subject.block(k).treatName=treatNames{4};
-                end
+                subject.block(k).treatName=treatNames{3};
+            elseif sum(find([subject.trial.treat]==3))>0
+                subject.block(k).treatName=treatNames{4};
             else
                 subject.block(k).treatName='';
             end
