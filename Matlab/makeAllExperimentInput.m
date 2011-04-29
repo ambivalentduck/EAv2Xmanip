@@ -32,3 +32,19 @@ for k=1:K
 end
 fclose(fid);
 
+fid=fopen('../Data/input0.dat');
+
+for k=33:40
+    fseek(fid,0,'bof');
+    fid2=fopen(['../Data/input',num2str(k),'.dat'],'w');
+    while 1
+        tline = fgetl(fid);
+        if ~ischar(tline)
+            break
+        end
+        writeme=regexprep(tline,'(^\d+\t)(5)',['$1','4']);
+        fprintf(fid2,[writeme,'\n']);
+    end
+    fclose(fid2);
+end
+fclose(fid);
