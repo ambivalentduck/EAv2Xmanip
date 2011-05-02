@@ -165,7 +165,7 @@ void DisplayWidget::paintGL()
 	
 	dataMutex.unlock();
 	swapBuffers();
-	glFinish();  //Get precise timing, blocks until swap succeeds.  Swap happens during refresh.
+	//glFinish();  //Get precise timing, blocks until swap succeeds.  Swap happens during refresh.
 	timer.start(15, this); //60 Hz = 16.6 ms, guarantee a paint in each refresh and almost immediately before refresh to minimize lag.
 }
 
