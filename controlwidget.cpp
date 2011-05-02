@@ -347,6 +347,7 @@ point ControlWidget::loadTrial(int T)
 	stimulus=stimuli(tempstim);
 	point temppoint=point(tempx,-tempy);
 	if (temptreat==3) {temptreat=2; temppoint*=2;}
+	if (temptreat==4) {temptreat=0; temppoint/=2l;}
 	treatment=treatments(temptreat);
 	trialNumBox->setValue(T);
 	stimulusBox->setCurrentIndex(tempstim);
