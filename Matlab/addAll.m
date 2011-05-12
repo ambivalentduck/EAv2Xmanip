@@ -84,6 +84,12 @@ end
 c=multcompare(stats,'alpha',.05)
 
 [p,table,stats]=anova1(learnSFvals,learnSFgroup)
-c=multcompare(stats,'alpha',.05)
+[c,m,h]=multcompare(stats,'alpha',.05)
+figure(h)
+clf
+hold on
+for k=1:4
+    plot([-m(k,2) m(k,2)]+m(k,1),[5-k 5-k],'b-',m(k,1),5-k,'bo')
 
+toc
 
