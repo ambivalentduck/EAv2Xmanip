@@ -52,7 +52,6 @@ for k=matexists'
     end
     
     try
-        error
         output{k}.learnrate=subject.tau;
     catch
         subject.tau=expFit(subject);
@@ -87,8 +86,14 @@ for k=matexists'
     fevalues(c)=mean(output{k}.rawvals(sub(5:8)));
     
     persistvalues(c)=mean(output{k}.rawvals(sub(1:6)))-mean(output{k}.rawvals(sub(7:12)));
-    
+
     tauvalues(c)=output{k}.learnrate;
+    taugroup=echangegroup;
+
+    for nm=1:4
+        tauvalues(c+nm*l)=output{k}.learnrate;
+        taugroup=[taugroup; echangegroup];
+    end
     
     toc
 end
@@ -114,6 +119,7 @@ c=multcompare(stats,'alpha',.05)
 title('Final Eror - Persistence')
 
 figure(5)
-[p,table,stats]=anova1(tauvalues,echangegroup,'off')
+[p,table,stats]=anova1(tauvalues,taugroup,'off')
+%[p,table,stats]=anova1(tauvalues,echangegroup,'off')
 c=multcompare(stats,'alpha',.05)
 title('Learning Rate')
