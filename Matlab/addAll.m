@@ -43,6 +43,7 @@ for k=matexists'
     k
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
+    
     try
         output{k}.rawvals=subject.maxperpendicular;
     catch
@@ -52,9 +53,18 @@ for k=matexists'
     end
     
     try
+        output{k}.rawvals=subject.times;
+    catch
+        subject.times=feval(@reachtimes,subject);
+        save(['../Data/',num2str(k),'.mat'],'subject')
+        output{k}.rawvals=subject.times;
+    end
+    
+    try
+        error
         output{k}.learnrate=subject.tau;
     catch
-        subject.tau=expFit(subject);
+        [subject.expfitvals,subject.tau]=expFit(subject);
         save(['../Data/',num2str(k),'.mat'],'subject')
         output{k}.learnrate=subject.tau;
     end
@@ -75,14 +85,10 @@ for k=matexists'
         aftereffectsgroup{cc}=group{c};
     end
     
-    subset=subject.block(3).trials;
-    learning3(c)=regressNotZero(subset,output{k}.rawvals(subset));
-    learn3vals((10*(c-1)+1):(10*c))=output{k}.rawvals(sub(1:10))-output{k}.rawvals(sub(11:20));
-
-    echangevals(c)=mean(output{k}.rawvals(subject.block(4).trials(1:2:end-1)))-mean(output{k}.rawvals(exes2));
+    echangevals(c)=mean(output{k}.rawvals(subject.block(4).trials(2:2:end)))-mean(output{k}.rawvals(exes2));
     echangegroup{c}=group{c};
     
-    sub=subject.block(4).trials(1:2:end-1);
+    sub=subject.block(4).trials(2:2:end);
     fevalues(c)=mean(output{k}.rawvals(sub(5:8)));
     
     persistvalues(c)=mean(output{k}.rawvals(sub(1:6)))-mean(output{k}.rawvals(sub(7:12)));
@@ -90,10 +96,10 @@ for k=matexists'
     tauvalues(c)=output{k}.learnrate;
     taugroup=echangegroup;
 
-    for nm=1:4
-        tauvalues(c+nm*l)=output{k}.learnrate;
-        taugroup=[taugroup; echangegroup];
-    end
+%     for nm=1:4
+%         tauvalues(c+nm*l)=output{k}.learnrate;
+%         taugroup=[taugroup; echangegroup];
+%     end
     
     toc
 end
@@ -119,7 +125,7 @@ c=multcompare(stats,'alpha',.05)
 title('Final Eror - Persistence')
 
 figure(5)
-[p,table,stats]=anova1(tauvalues,taugroup,'off')
+[p,table,stats]=kruskalwallis(tauvalues,taugroup,'off')
 %[p,table,stats]=anova1(tauvalues,echangegroup,'off')
 c=multcompare(stats,'alpha',.05)
 title('Learning Rate')

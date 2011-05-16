@@ -41,7 +41,7 @@ for o=1:lo
     subset=subject.block(3).trials;
     learning3(o)=regressNotZero(subset,output{o}(subset));
 
-    sub=[exes2, subject.block(4).trials(end-length(exes2)+1:end)];
+    sub=[exes2, subject.block(4).trials(endMax Perpendicular Distance-length(exes2)+1:end)];
     learningStarttoFinish(o)=regressNotZero(sub,output{o}(sub));
 end
 
@@ -84,7 +84,7 @@ for k=1:lo
             dots=find([subject.trial(subset).stim]==0);
         end
         output_=output{k}(subset);
-        plot(subset(dots),output_(dots)+(k-1),'b.')
+        plot(subset(dots(2:2:end)),output_(dots(2:2:end))+(k-1),'b.')
         plot(subset(exes),output_(exes)+(k-1),'bx')
         for kk=1:5
             symbol='.';
@@ -104,6 +104,13 @@ for k=1:lo
     end
 end
 
+try
+    k=1;
+    y=subject.expfitvals(1)+subject.expfitvals(2)*exp(-(0:length(subject.block(3).trials)-1)/subject.expfitvals(3));
+    y=y-ticklabs(1+2*(k-1));
+    y=y/(ticklabs(2*k)-ticklabs(1+2*(k-1)));
+    plot(subject.block(3).trials,y,'c')
+end
 
 plotlaunches(gcf,lo,subject,colors,centers)
 
