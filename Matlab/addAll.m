@@ -43,46 +43,29 @@ for k=matexists'
     k
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
-<<<<<<< HEAD
+    
+    try
+        output{k}.rawvals=subject.maxperpendicular;
+    catch
+        subject.maxperpendicular=feval(@maxperpendicular,subject);
+        save(['../Data/',num2str(k),'.mat'],'subject')
+        output{k}.rawvals=subject.maxperpendicular;
+    end
+    
 %     try
-%         output{k}.rawvals=subject.maxperpendicular;
+%         output{k}.rawvals=subject.times;
 %     catch
-%         subject.maxperpendicular=feval(@maxperpendicular,subject);
+%         subject.times=feval(@reachtimes,subject);
 %         save(['../Data/',num2str(k),'.mat'],'subject')
-%         output{k}.rawvals=subject.maxperpendicular;
+%         output{k}.rawvals=subject.times;
 %     end
-=======
->>>>>>> e2b4757411bfc8ee833e73d6f2bbf7cd954f4ad4
     
     try
-        output{k}.rawvals=subject.sumperpendicular;
-    catch
-        subject.sumperpendicular=feval(@sumperpendicular,subject);
-        save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.rawvals=subject.sumperpendicular;
-    end
-    
-    try
-<<<<<<< HEAD
-        output{k}.learnrate=subject.sumtau;
-    catch
-        subject.sumtau=expFit(subject.sumperpendicular(subject.block(4).trials(1:2:end-1))');
-=======
-        output{k}.rawvals=subject.times;
-    catch
-        subject.times=feval(@reachtimes,subject);
-        save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.rawvals=subject.times;
-    end
-    
-    try
-        error
         output{k}.learnrate=subject.tau;
     catch
         [subject.expfitvals,subject.tau]=expFit(subject);
->>>>>>> e2b4757411bfc8ee833e73d6f2bbf7cd954f4ad4
         save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.learnrate=subject.sumtau;
+        output{k}.learnrate=subject.tau;
     end
         
     group{c}=subject.block(3).treatName;
@@ -145,5 +128,3 @@ figure(5)
 %[p,table,stats]=anova1(tauvalues,echangegroup,'off')
 c=multcompare(stats,'alpha',.05)
 title('Learning Rate')
-
-toc
