@@ -84,7 +84,7 @@ for n=1:ns
     cumblocks=cumsum([1 blocks]);
     blockNames={'Warm-Up','Sporadically Stimulated','Stimulated and Treated','Stimulated and Untreated','Warm-Down'};
     stimNames={'','Curl','Saddle','Visual Rotation'};
-    treatNames={'','EA','2XVC', '2XHC'};
+    treatNames={'','EA','2XVC', '2XHC','Half-Reach'};
 
     for k=1:length(blocks)
         subject.block(k).trials=cumblocks(k):cumblocks(k+1)-1;
@@ -99,6 +99,8 @@ for n=1:ns
                 subject.block(k).treatName=treatNames{3};
             elseif sum(find([subject.trial.treat]==3))>0
                 subject.block(k).treatName=treatNames{4};
+            elseif sum(find([subject.trial.treat]==4))>0
+                subject.block(k).treatName=treatNames{5};
             else
                 subject.block(k).treatName='';
             end
