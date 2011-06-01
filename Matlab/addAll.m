@@ -52,16 +52,15 @@ for k=matexists'
         output{k}.rawvals=subject.maxperpendicular;
     end
     
-    try
-        output{k}.rawvals=subject.times;
-    catch
-        subject.times=feval(@reachtimes,subject);
-        save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.rawvals=subject.times;
-    end
+%     try
+%         output{k}.rawvals=subject.times;
+%     catch
+%         subject.times=feval(@reachtimes,subject);
+%         save(['../Data/',num2str(k),'.mat'],'subject')
+%         output{k}.rawvals=subject.times;
+%     end
     
     try
-        error
         output{k}.learnrate=subject.tau;
     catch
         [subject.expfitvals,subject.tau]=expFit(subject);
