@@ -41,7 +41,7 @@ for o=1:lo
     subset=subject.block(3).trials;
     learning3(o)=regressNotZero(subset,output{o}(subset));
 
-    sub=[exes2, subject.block(4).trials(endMax Perpendicular Distance-length(exes2)+1:end)];
+    sub=[exes2, subject.block(4).trials(max([end-2*length(exes2),2]):2:end)];
     learningStarttoFinish(o)=regressNotZero(sub,output{o}(sub));
 end
 
