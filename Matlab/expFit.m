@@ -1,7 +1,10 @@
 function [bestP,tau]=expFit(subject, p0)
 
-x=8:2:length(subject.block(3).trials);
+x=2:2:length(subject.block(3).trials)/4;
+%y=subject.times./log(subject.maxperpendicular);
+%y=y(x-1+subject.block(3).trials(1))';
 y=subject.maxperpendicular(x-1+subject.block(3).trials(1))';
+
 plot(x,y)
 p0=[];
 

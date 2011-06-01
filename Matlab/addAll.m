@@ -15,7 +15,9 @@ matexists=zeros(40,1);
 
 for k=1:40
     if(exist(['../Data/',num2str(k),'.mat']))
-        matexists(k)=1;
+        if sum(k==[24])==0
+            matexists(k)=1;
+        end
     end
 end
 
@@ -39,11 +41,12 @@ echangegroup=cell(l,1);
 output={};
 c=0;
 toc
+numbers=zeros(size(matexists));
 for k=matexists'
     k
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
-    
+    numbers(c)=k;
     try
         output{k}.rawvals=subject.maxperpendicular;
     catch
@@ -52,13 +55,16 @@ for k=matexists'
         output{k}.rawvals=subject.maxperpendicular;
     end
     
-%     try
-%         output{k}.rawvals=subject.times;
-%     catch
-%         subject.times=feval(@reachtimes,subject);
-%         save(['../Data/',num2str(k),'.mat'],'subject')
-%         output{k}.rawvals=subject.times;
-%     end
+    try
+        output{k}.rawvals=subject.times;
+    catch
+        subject.times=feval(@reachtimes,subject);
+        save(['../Data/',num2str(k),'.mat'],'subject')
+        output{k}.rawvals=subject.times;
+    end
+    
+    %output{k}.rawvals=subject.times./log(subject.maxperpendicular);
+    output{k}.rawvals=subject.maxperpendicular;
     
     try
         output{k}.learnrate=subject.tau;
@@ -67,11 +73,21 @@ for k=matexists'
         save(['../Data/',num2str(k),'.mat'],'subject')
         output{k}.learnrate=subject.tau;
     end
+    
+    try
+        output{k}.rawvals=subject.speed;
+    catch
+        subject.speed=avespeed(subject);
+        save(['../Data/',num2str(k),'.mat'],'subject')
+        output{k}.rawvals=subject.speed;
+    end
         
     group{c}=subject.block(3).treatName;
     if isempty(group{c})
         group{c}='Null';
     end
+    
+    
 
     
     f=find([subject.trial(subject.block(2).trials).stim]~=0);
@@ -88,7 +104,7 @@ for k=matexists'
     echangegroup{c}=group{c};
     
     sub=subject.block(4).trials(2:2:end);
-    fevalues(c)=mean(output{k}.rawvals(sub(5:8)));
+    fevalues(c)=mean(output{k}.rawvals(sub));
     
     persistvalues(c)=mean(output{k}.rawvals(sub(1:6)))-mean(output{k}.rawvals(sub(7:12)));
 
@@ -104,27 +120,17 @@ for k=matexists'
 end
 
 figure(1)
-[p,table,stats]=anova1(abs(aftereffectsvals),aftereffectsgroup,'off')
-c=multcompare(stats,'alpha',.05)
-title('After-Effects')
+annotatedplot(-aftereffectsvals,aftereffectsgroup,@anova1,'After-Effects')
 
 figure(2)
-[p,table,stats]=anova1(abs(echangevals),echangegroup,'off')
-c=multcompare(stats,'alpha',.05)
-title('Error Change in Eval 1 - 2')
+annotatedplot(-echangevals,echangegroup,@anova1,'Error Change in Eval 1 - 2')
 
 figure(3)
-[p,table,stats]=anova1(fevalues,echangegroup,'off')
-c=multcompare(stats,'alpha',.05)
-title('Error Midway through Second Eval')
+annotatedplot(fevalues,echangegroup,@anova1,'Error Midway through Second Eval')
 
 figure(4)
-[p,table,stats]=anova1(persistvalues,echangegroup,'off')
-c=multcompare(stats,'alpha',.05)
-title('Final Eror - Persistence')
+annotatedplot(persistvalues,echangegroup,@anova1,'Final Eror - Persistence')
 
 figure(5)
-[p,table,stats]=kruskalwallis(tauvalues,taugroup,'off')
-%[p,table,stats]=anova1(tauvalues,echangegroup,'off')
-c=multcompare(stats,'alpha',.05)
-title('Learning Rate')
+%annotatedplot(tauvalues,taugroup,@anova1,'Tau','noplot')
+annotatedplot(tauvalues,taugroup,@kruskalwallis,'Tau','noplot')
