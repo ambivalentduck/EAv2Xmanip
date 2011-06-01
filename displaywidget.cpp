@@ -72,6 +72,8 @@ DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 	setAutoBufferSwap(false); //Don't let QT swap automatically, we want to control timing.
 	backgroundColor=point(0,0,0);
 	min=.4436;
+	
+	pbuffer=new QGLPixelBuffer(QSize(1280,1024), QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer),this);
 }
 
 DisplayWidget::~DisplayWidget()
@@ -94,6 +96,15 @@ void DisplayWidget::initializeGL()
 	
 	glEnable(GL_POINT_SMOOTH);
 	glPointSize(1);
+	
+	pbuffer->makeCurrent();
+	glClearColor(0,0,0,1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glShadeModel(GL_FLAT);
+	glViewport(0,0, 1280, 1024);
+	glMatrixMode(GL_PROJECTION);
+	glOrtho(LEFT,RIGHT,BOTTOM,TOP,1,-1);
+	dyntexture=pbuffer->generateDynamicTexture();
 }
 
 void DisplayWidget::resizeGL(int w, int h)
@@ -117,6 +128,7 @@ void DisplayWidget::paintGL()
 {
 	timer.stop();
 	dataMutex.lock();
+	pbuffer->makeCurrent();
 	glClearColor(backgroundColor.X(), backgroundColor.Y(), backgroundColor.Z(),1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glShadeModel(GL_FLAT);
@@ -162,6 +174,12 @@ void DisplayWidget::paintGL()
 		glRectd(LEFTBAR,BOTTOM+LOWERBAR*(TOP-BOTTOM)-.001,RIGHT,BOTTOM+LOWERBAR*(TOP-BOTTOM)+.001);
 		glRectd(LEFTBAR,BOTTOM+UPPERBAR*(TOP-BOTTOM)-.001,RIGHT,BOTTOM+UPPERBAR*(TOP-BOTTOM)+.001);
 	}
+	pbuffer->updateDynamicTexture(dyntexture);
+	
+	makeCurrent();
+	glBindTexture(GL_TEXTURE_2D, dyntexture);
+	glBegin(GL_POLYGON)
+	
 	
 	dataMutex.unlock();
 	swapBuffers();

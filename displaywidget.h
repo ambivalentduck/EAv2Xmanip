@@ -42,7 +42,7 @@ public:
 	void setText(QString t) {dataMutex.lock(); text=t; dataMutex.unlock();}
 	
 private:
-	GLuint sphereList;
+	GLuint sphereList, dyntexture;
 	int W, H;
 	QBasicTimer timer;
 	std::vector<Sphere> spheres;
@@ -51,6 +51,7 @@ private:
 	QMutex dataMutex;
 	double min;
 	QString text;
+	QGLPixelbuffer * pbuffer;
 };
 
 #endif
