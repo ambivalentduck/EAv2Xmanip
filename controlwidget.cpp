@@ -163,13 +163,14 @@ void ControlWidget::readPending()
 		return;
 	}
 	
-	times.pushback(now);
-	data.pushback(in);
+	times.push_back(now);
+	data.push_back(in);
 	bool old_enough=false;
 	while((times.front()-now)>.05)
 	{
 		times.pop_front();
-		in=data.pop_front();
+		in=data.front();
+		data.pop_front();
 		old_enough=true;
 	}
 	if(!old_enough) return;
