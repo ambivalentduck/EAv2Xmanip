@@ -163,6 +163,17 @@ void ControlWidget::readPending()
 		return;
 	}
 	
+	times.pushback(now);
+	data.pushback(in);
+	bool old_enough=false;
+	while((times.front()-now)>.05)
+	{
+		times.pop_front();
+		in=data.pop_front();
+		old_enough=true;
+	}
+	if(!old_enough) return;
+	
 	cursor.X()=*reinterpret_cast<double*>(in.data()+sizeof(double));
 	cursor.Y()=*reinterpret_cast<double*>(in.data()+2*sizeof(double));
 	velocity.X()=*reinterpret_cast<double*>(in.data()+3*sizeof(double));
