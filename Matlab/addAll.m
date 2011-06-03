@@ -29,6 +29,7 @@ learn3vals=zeros(l,1);
 %smallfeVals
 echangevals=zeros(l,1);
 fevalues=zeros(l,1);
+trainingvariability=zeros(l,1);
 persistvalues=zeros(l,1);
 tauvalues=zeros(l,1);
 
@@ -54,20 +55,18 @@ for k=matexists'
         save(['../Data/',num2str(k),'.mat'],'subject')
         output{k}.rawvals=subject.maxperpendicular;
     end
-    
-    try
-        output{k}.rawvals=subject.times;
-    catch
-        subject.times=feval(@reachtimes,subject);
-        save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.rawvals=subject.times;
-    end
+%     
+%     try
+%         output{k}.rawvals=subject.times;
+%     catch
+%         subject.times=feval(@reachtimes,subject);
+%         save(['../Data/',num2str(k),'.mat'],'subject')
+%         output{k}.rawvals=subject.times;
+%     end
     
     %output{k}.rawvals=subject.times./log(subject.maxperpendicular);
-    output{k}.rawvals=subject.maxperpendicular;
-    
+
     try
-        error
         output{k}.learnrate=subject.tau;
     catch
         [subject.expfitvals,subject.tau]=expFit(subject);
@@ -75,14 +74,23 @@ for k=matexists'
         output{k}.learnrate=subject.tau;
     end
     
-    try
-        output{k}.rawvals=subject.speed;
-    catch
-        subject.speed=avespeed(subject);
-        save(['../Data/',num2str(k),'.mat'],'subject')
-        output{k}.rawvals=subject.speed;
-    end
-        
+%     try
+%         output{k}.rawvals=subject.speed;
+%     catch
+%         subject.speed=avespeed(subject);
+%         save(['../Data/',num2str(k),'.mat'],'subject')
+%         output{k}.rawvals=subject.speed;
+%     end
+    
+%     try
+%         output{k}.rawvals=subject.initialdirection;
+%     catch
+%         subject.initialdirection=initialdirection(subject);
+%         save(['../Data/',num2str(k),'.mat'],'subject')
+%         output{k}.rawvals=subject.initialdirection;
+%     end
+
+
     group{c}=subject.block(3).treatName;
     if isempty(group{c})
         group{c}='Null';
@@ -101,6 +109,8 @@ for k=matexists'
         aftereffectsgroup{cc}=group{c};
     end
     
+    trainingvariability(c)=std(output{k}.rawvals(subject.block(4).trials(end/2-1:2:end-1)));
+    
     echangevals(c)=mean(output{k}.rawvals(subject.block(4).trials(1:2:end-1)))-mean(output{k}.rawvals(exes2));
     echangegroup{c}=group{c};
     
@@ -111,11 +121,6 @@ for k=matexists'
 
     tauvalues(c)=output{k}.learnrate;
     taugroup=echangegroup;
-
-%     for nm=1:4
-%         tauvalues(c+nm*l)=output{k}.learnrate;
-%         taugroup=[taugroup; echangegroup];
-%     end
     
     toc
 end
@@ -127,6 +132,8 @@ annotatedplot(2,-echangevals,echangegroup,@anova1,'Error Change in Eval 1 - 2')
 annotatedplot(3,fevalues,echangegroup,@anova1,'Error Midway through Second Eval')
 
 annotatedplot(4,persistvalues,echangegroup,@anova1,'Final Eror - Persistence')
+
+annotatedplot(6,trainingvariability,echangegroup,@anova1,'Variability 2nd half of training')
 
 fi=find(tauvalues<175);
 annotatedplot(5,tauvalues(fi),taugroup(fi),@anova1,'Tau','noplot')
