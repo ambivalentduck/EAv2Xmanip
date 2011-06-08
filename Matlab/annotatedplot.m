@@ -45,7 +45,7 @@ for k=1:length(ticks)
     end
     if n<10
         if Q>qtable(n-2)
-            if nargin < 7
+            if nargin < 7title(ptitle)
                 plot(svals(qout),ticks(k),'rx')
             end
             failpoint=f(ind(qout))
@@ -56,7 +56,7 @@ end
 
 
 if ~isempty(fails)
-    figure(fignum+20)
+    figure(fignum+200)
     clf
     comp=zeros(size(values));
     l=[1:length(values)]';
@@ -67,5 +67,6 @@ if ~isempty(fails)
 
     [p,table,stats]=fcn(values(f),group(f),'off');
     [c,m,h]=multcompare(stats,'alpha',.05);
+    title(ptitle)
 end
 

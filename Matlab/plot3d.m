@@ -27,9 +27,9 @@ for k=subject.block(3).trials(1:2:end-1)
     [m,i]=min(abs(t-(t(c)+.100)));
 
     kk=k/1000;
-    plot3(x(:,1),x(:,2),kk*ones(size(x(:,2))),color(dat.targetcat));
-    plot3(x(i,1),x(i,2),kk,'rx') %100 ms
-    plot3(target(1),target(2),kk,'cx')
+    plot3(x(:,1),-x(:,2),kk*ones(size(x(:,2))),color(dat.targetcat));
+    plot3(x(i,1),-x(i,2),kk,'rx') %100 ms
+    plot3(target(1),-target(2),kk,'cx')
 end
 
 axis equal
