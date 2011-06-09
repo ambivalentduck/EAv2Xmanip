@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#define BUFFSIZE 1024
+#define BUFFSIZE 64
 
 DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 :QGLWidget(QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer), parent, 0, FullScreen?Qt::X11BypassWindowManagerHint:Qt::Widget)
@@ -22,9 +22,7 @@ DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 	setAutoFillBackground(false); //Try to let glClear work...
 	setAutoBufferSwap(false); //Don't let QT swap automatically, we want to control timing.
 	backgroundColor=point(0,0,0);
-	min=.4436;
-	
-	pbuffer=new QGLPixelBuffer(QSize(1280,1024), QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer),this);
+	min=(fabs(LEFT-RIGHT)>fabs(TOP-BOTTOM)?fabs(TOP-BOTTOM):fabs(LEFT-RIGHT)); //Screen diameter (shortest dimension) known from direct observation, do not change
 }
 
 DisplayWidget::~DisplayWidget()
@@ -74,7 +72,7 @@ void DisplayWidget::resizeGL(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//Render from projector's perspective, projector must be 0,0,0, looking down -Z
-	glFrustum(LEFT-PROJECTORX,RIGHT-PROJECTORX,PROJECTORY-BOTTOM,PROJECTORY-TOP,1.27,1.495);
+	glFrustum(LEFT-PROJECTORX,RIGHT-PROJECTORX,PROJECTORY-BOTTOM,PROJECTORY-TOP,.999*PROJECTORZ,1.495);
 	update();
 }
 
