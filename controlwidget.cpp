@@ -79,8 +79,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	setGeometry(geo);
 	
 	int notprimary=qdw->primaryScreen()==0?1:0;
-	
-	userWidget=new DisplayWidget(qdw->screen(notprimary), true);
+	userWidget=new DisplayWidget(qdw->screen(notprimary), (qdw->screenCount()>1)?true:false);
 	userWidget->setGeometry(qdw->screenGeometry(notprimary));
 	userWidget->show();
 	
