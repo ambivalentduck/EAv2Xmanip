@@ -2,7 +2,7 @@ clc
 clear all
 close all
 tic
-for k=1:40
+for k=[1:40, 101]
     if(~exist(['../Data/',num2str(k),'.mat']))
         try
             addSubject(num2str(k))
@@ -11,9 +11,9 @@ for k=1:40
     end
 end
 
-matexists=zeros(40,1);
+matexists=zeros(41,1);
 
-for k=1:40
+for k=[1:40, 101]
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;
