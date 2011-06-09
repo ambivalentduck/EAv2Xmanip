@@ -75,7 +75,7 @@ for cat=1:3
         trainingvariability(c)=std(output{k}.rawvals(subject.block(4).ctrials(floor(end/2):end)));
 
         echangevals(c)=mean(output{k}.rawvals(subject.block(4).ctrials))-mean(output{k}.rawvals(exes2));
-        vchangevals(c)=std(output{k}.rawvals(subject.block(4).ctrials))/std(output{k}.rawvals(exes2));
+        %vchangevals(c)=std(outputs(c).treat{k}.rawvals(subject.block(4).ctrials))/std(output{k}.rawvals(exes2));
         echangegroup{c}=group{c};
 
         fevalues(c)=mean(output{k}.rawvals(subject.block(4).ctrials(floor(end/2):end)));
@@ -101,7 +101,10 @@ end
 anovavals=[vals(:,1); vals(:,2); vals(:,3)];
 cat=[ones(size(vals(:,1)))*1;ones(size(vals(:,1)))*2;ones(size(vals(:,1)))*3];
 groups=[group;group;group];
-[p,table,stats]=anovan(anovavals,{groups,cat})
+g=genders;
+g=g(matexists);
+gender=[g;g;g];
+[p,table,stats]=anovan(anovavals,{groups,cat,gender})
 
 
 ave=zeros(5,3);
