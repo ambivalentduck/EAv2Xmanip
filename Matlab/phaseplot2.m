@@ -59,7 +59,7 @@ for k=1:length(output)
     if isempty(f)
         f=1:length(output{k});
     end
-    ticklabs(1+2*(k-1))=min(output{k}(f));
+    ticklabs(1+2*(k-1))=min(output{k}(f)); %tick labels for blocks reach time and max perp
     ticklabs(2*k)=max(output{k}(f));
     output{k}=output{k}-ticklabs(1+2*(k-1)); %subtract off the minimum
     output{k}=output{k}/(ticklabs(2*k)-ticklabs(1+2*(k-1))); %divide by the maximum
@@ -87,7 +87,7 @@ for k=1:lo
         plot(subset(dots(2:2:end)),output_(dots(2:2:end))+(k-1),'b.')
         plot(subset(exes),output_(exes)+(k-1),'bx')
         for kk=1:5
-            symbol='.';
+            symbol='o';
             plot(subject.block(b).trials(kk),output{k}(subject.block(b).trials(kk))+(k-1),[symbol,colors(kk)])
             plot(subject.block(b).trials(end-(kk-1)),output{k}(subject.block(b).trials(end-(kk-1)))+(k-1),[symbol,colors(6-kk)])
         end
@@ -112,7 +112,7 @@ try
     plot(subject.block(3).trials,y,'c')
 end
 
-plotlaunches(gcf,lo,subject,colors,centers)
+%plotlaunches(gcf,lo,subject,colors,centers)
 
 legends=cell(length(subject.block),1);
 for k=1:length(subject.block)
@@ -129,13 +129,14 @@ for k=1:length(subject.block)
     end
     legends{k}=[subject.block(k).typeName,arrow,subject.block(k).stimName,plus,subject.block(k).treatName];
 end
+
 legends{end-1}=[legends{end-1},' ',legends{end}];
 legends{end}=' ';
 
 
 xtick=zeros(length(subject.block),1);
 
-ylim([0 lo+2])
+ylim([0 lo])
 y=ylim;
 
 for k=1:length(subject.block)
@@ -145,7 +146,7 @@ for k=1:length(subject.block)
     xtick(k)=mean([subject.block(k).trials(1) subject.block(k).trials(end)]);
 end
 L=subject.block(end).trials(end);
-for k=1:(length(output)+1)
+for k=1:(length(output))
     plot([1 L], [k k],'r')
 end
 
@@ -158,16 +159,18 @@ labels{end}='First five';
 ytick=zeros(3*lo,1);
 yticklabs=cell(3*lo,1);
 displace=.1;
-for k=1:lo+2
+
+for k=1:lo
     ytick(1+3*(k-1):3*k)=[(k-1)+displace; k-.5; k-displace];
     yticklabs(1+3*(k-1):3*k)={num2str(ticklabs(1+2*(k-1))); labels{k}; num2str(ticklabs(2*k))};
 end
+
 set(gca,'ytick',ytick);
 set(gca,'yticklabel',yticklabs);
 
 set(gca,'xlim',[1 L]);
 set(gca,'xtick',xtick);
 set(gca,'xticklabel',legends)
-title([name,', \tau = ',num2str(subject.tau,2)])
+%title([name,', \tau = ',num2str(subject.tau,2)])
 
 end
