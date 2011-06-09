@@ -10,13 +10,14 @@
 #include <deque>
 #include "point.h"
 
-#define LEFT .305379l
-#define RIGHT -.3249l
-#define TOP .2455l
-#define BOTTOM .670258l
-#define PROJECTORX -.018690
-#define PROJECTORY .634997
-#define PROJECTORZ 1.28
+
+#define LEFT .30728l
+#define RIGHT -.327556l
+#define TOP .2288l
+#define BOTTOM .692616l
+#define PROJECTORX -.014155l
+#define PROJECTORY .627688l
+#define PROJECTORZ 1.29l
 
 #define LOWERBAR .50l
 #define UPPERBAR .65l

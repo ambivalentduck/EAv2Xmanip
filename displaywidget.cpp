@@ -23,6 +23,8 @@ DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 	setAutoBufferSwap(false); //Don't let QT swap automatically, we want to control timing.
 	backgroundColor=point(0,0,0);
 	min=.4436;
+	
+	pbuffer=new QGLPixelBuffer(QSize(1280,1024), QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer),this);
 }
 
 DisplayWidget::~DisplayWidget()
@@ -60,6 +62,7 @@ void DisplayWidget::initializeGL()
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(LEFT,RIGHT,BOTTOM,TOP,-1,1);
+
 	dyntexture=pbuffer->generateDynamicTexture();
 }
 
@@ -79,7 +82,7 @@ void DisplayWidget::paintGL()
 {
 	timer.stop();
 	dataMutex.lock();
-	
+
 	pbuffer->makeCurrent();
 	glClearColor(backgroundColor.X(), backgroundColor.Y(), backgroundColor.Z(),1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -104,6 +107,7 @@ void DisplayWidget::paintGL()
 		glCallList(sphereList);
 		glPopMatrix();
 	}
+
 	pbuffer->updateDynamicTexture(dyntexture);
 
 	makeCurrent();

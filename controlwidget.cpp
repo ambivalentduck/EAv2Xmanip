@@ -165,7 +165,7 @@ void ControlWidget::readPending()
 	times.push_back(now);
 	data.push_back(in);
 	bool old_enough=false;
-	while((times.front()-now)>.05)
+	while((now-times.front())>.025)
 	{
 		times.pop_front();
 		in=data.front();
@@ -339,7 +339,7 @@ point ControlWidget::loadTrial(int T)
 	trial=T;
 	if(trialFile.atEnd()) emit(endApp());
 	
-	char line[200];
+	char line[201];
 	std::string qline;
 	int temptrial, temptreat, tempstim;
 	double tempx, tempy;
