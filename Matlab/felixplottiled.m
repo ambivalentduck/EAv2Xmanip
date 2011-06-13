@@ -8,7 +8,7 @@ once=0;
 
 matexists=zeros(40,1);
 
-for k=1:40
+for k=[1:40 102]
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;
@@ -110,10 +110,10 @@ colors=[1, 0, 0;
     1,0,1];
 
 
-for k=1:5
+for k=1:6
     f=find(groupnums==k);
     for g=1:4
-        subplot(5,4,g+(k-1)*4)
+        subplot(6,4,g+(k-1)*4)
         if k==1
             title(names{g})
         end
@@ -132,10 +132,10 @@ end
 
 figure(101)
 clf
-for k=1:5
+for k=1:6
     f=find(groupnums==k);
     for g=1:4
-        subplot(5,4,g+(k-1)*4)
+        subplot(6,4,g+(k-1)*4)
         if k==1
             title(names{g})
         end

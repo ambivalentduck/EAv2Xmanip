@@ -2,7 +2,7 @@ clc
 clear all
 close all
 tic
-for k=[1:40, 101]
+for k=[1:40, 101:110]
     if(~exist(['../Data/',num2str(k),'.mat']))
         try
             addSubject(num2str(k))
@@ -68,7 +68,6 @@ for k=matexists'
     output{k}.rawvals=subject.times./log(subject.maxperpendicular);
 
     try
-        error
         output{k}.learnrate=subject.tau;
     catch
         [subject.expfitvals,subject.tau]=expFit(subject);
