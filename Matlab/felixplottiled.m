@@ -145,9 +145,9 @@ for k=1:5
         hold on
         for cat=1:3
             tdesired=linspace(0,.65,100);
-            tlist=[s.block(g).cat(cat).val.t];
-            x=weightedAve(tlist,[s.block(g).cat(cat).val.x],tdesired,spaceconst);
-            y=weightedAve(tlist,[s.block(g).cat(cat).val.y],tdesired,spaceconst);
+            tlist=[s.block(g).cat(cat).val(f).t];
+            x=weightedAve(tlist,[s.block(g).cat(cat).val(f).x],tdesired,spaceconst);
+            y=weightedAve(tlist,[s.block(g).cat(cat).val(f).y],tdesired,spaceconst);
             plot(x,y,'k')
         end
         axis equal
