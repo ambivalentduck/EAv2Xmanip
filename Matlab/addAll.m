@@ -15,9 +15,7 @@ matexists=zeros(41,1);
 
 for k=[1:40, 101]
     if(exist(['../Data/',num2str(k),'.mat']))
-        if sum(k==[24])==0
-            matexists(k)=1;
-        end
+        matexists(k)=1;
     end
 end
 
@@ -44,7 +42,7 @@ c=0;
 toc
 numbers=zeros(size(matexists));
 for k=matexists'
-    k
+    k=102
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
     numbers(c)=k;
