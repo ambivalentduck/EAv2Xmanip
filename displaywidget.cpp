@@ -3,7 +3,7 @@
 #include <cmath>
 #include <iostream>
 
-#define BUFFSIZE 64
+#define BUFFSIZE 1024
 
 DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 :QGLWidget(QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer), parent, 0, FullScreen?Qt::X11BypassWindowManagerHint:Qt::Widget)

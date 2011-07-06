@@ -8,7 +8,7 @@
 #define cRadius min/40
 #define tRadius min/40
 #define TAB << "\t" <<
-#define CURLVAL 20  //Should be -20, changed for Justin
+#define CURLVAL -20
 #define SADDLEVAL 10
 #define TIME_OFFSET .25l
 
@@ -165,7 +165,7 @@ void ControlWidget::readPending()
 	times.push_back(now);
 	data.push_back(in);
 	bool old_enough=false;
-	while((now-times.front())>.050)
+	while((now-times.front())>.030)
 	{
 		times.pop_front();
 		in=data.front();
