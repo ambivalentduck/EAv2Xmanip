@@ -2,7 +2,7 @@ function makequickm()
 
 Treat=0;
 Stim=1;
-number=666;
+number=667;
 
 if Treat==3
     Treat=2;
@@ -43,16 +43,16 @@ end
 [dir,s]=shuffleStuff(30, 0);
 for k=31:90
     if mod(k,2)
-        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,1,0,0,.05);
+        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,3,0,0,.05);
     else
-        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,1,xtable(dir(k/2-15),dist),ytable(dir(k/2-15),dist),.05);
+        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,3,xtable(dir(k/2-15),dist),ytable(dir(k/2-15),dist),.05);
     end
 end
 for k=91:150
     if mod(k,2)
-        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,1,0,0,0);
+        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,3,0,0,0);
     else
-        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,1,xtable(dir(k/2-45),dist),ytable(dir(k/2-45),dist),0);
+        fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\t%6.6f\n',k,0,3,xtable(dir(k/2-45),dist),ytable(dir(k/2-45),dist),0);
     end
 end
 
