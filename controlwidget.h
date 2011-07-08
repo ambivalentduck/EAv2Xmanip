@@ -31,7 +31,7 @@ private:
 	DisplayWidget * userWidget;
 
 	void closeEvent(QCloseEvent *event);
-	void goGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(false); }
+	void goGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(true); }  //changed from false 
 	void unGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(true); }
 	point loadTrial(int T);
 	void noConsecutive(bool * array, int n);

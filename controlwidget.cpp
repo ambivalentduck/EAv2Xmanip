@@ -8,7 +8,7 @@
 #define cRadius min/40
 #define tRadius min/40
 #define TAB << "\t" <<
-#define CURLVAL 20  //Should be -20, changed for Justin
+#define CURLVAL -20  //Should be -20, changed for Justin
 #define SADDLEVAL 10
 #define TIME_OFFSET .25l
 
