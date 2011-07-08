@@ -2,7 +2,7 @@ clc
 clear all
 close all
 tic
-for k=1:40
+for k=[1:40, 101:110]
     if(~exist(['../Data/',num2str(k),'.mat']))
         try
             addSubject(num2str(k))
@@ -11,13 +11,11 @@ for k=1:40
     end
 end
 
-matexists=zeros(40,1);
+matexists=zeros(41,1);
 
-for k=1:40
+for k=[1:40, 101]
     if(exist(['../Data/',num2str(k),'.mat']))
-        if sum(k==[24])==0
-            matexists(k)=1;
-        end
+        matexists(k)=1;
     end
 end
 
@@ -44,26 +42,26 @@ c=0;
 toc
 numbers=zeros(size(matexists));
 for k=matexists'
-    k
+    k=102
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
     numbers(c)=k;
-    %     try
-    %         output{k}.rawvals=subject.maxperpendicular;
-    %     catch
-    %         subject.maxperpendicular=feval(@maxperpendicular,subject);
-    %         save(['../Data/',num2str(k),'.mat'],'subject')
-    %         output{k}.rawvals=subject.maxperpendicular;
-    %     end
+        try
+            output{k}.rawvals=subject.maxperpendicular;
+        catch
+            subject.maxperpendicular=feval(@maxperpendicular,subject);
+            save(['../Data/',num2str(k),'.mat'],'subject')
+            output{k}.rawvals=subject.maxperpendicular;
+        end
     
-    %
-    %     try
-    %         output{k}.rawvals=subject.times;
-    %     catch
-    %         subject.times=feval(@reachtimes,subject);
-    %         save(['../Data/',num2str(k),'.mat'],'subject')
-    %         output{k}.rawvals=subject.times;
-    %     end
+    
+        try
+            output{k}.rawvals=subject.times;
+        catch
+            subject.times=feval(@reachtimes,subject);
+            save(['../Data/',num2str(k),'.mat'],'subject')
+            output{k}.rawvals=subject.times;
+        end
 
     output{k}.rawvals=subject.times./log(subject.maxperpendicular);
 

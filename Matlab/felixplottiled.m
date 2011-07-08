@@ -8,7 +8,7 @@ once=0;
 
 matexists=zeros(40,1);
 
-for k=1:40
+for k=[1:40 102]
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;
@@ -29,12 +29,8 @@ for k=matexists'
     if isempty(group{c})
         group{c}='Null';
     end
-    
-    if ~once
-        figure(100)
-        clf
-        hold on
 
+    if ~once
         names{1}='Baseline';
         set{1}=subject.block(1).trials(end/2-2:2:end-1);
 
@@ -42,8 +38,18 @@ for k=matexists'
         f=find([subject.trial(subject.block(2).trials).stim]~=0);
         set{2}=subject.block(2).trials(f);
 
-        names{3}='After Training';
-        set{3}=subject.block(4).trials(end/2-3:2:end-1);
+        targetcats=[subject.trial(subject.block(4).trials).targetcat];
+        one=subject.block(4).trials(find(targetcats==1));
+        two=subject.block(4).trials(find(targetcats==2));
+        three=subject.block(4).trials(find(targetcats==3));
+        
+        for kk=3:8
+            names{kk}=['After Training - ',num2str(kk-2)];
+            set{kk}=[one(kk-2) two(kk-2) three(kk-2)];
+        end
+
+        names{9}='After Training - Steady State';
+        set{9}=subject.block(4).trials(end/2-3:2:end-1);
 
         aftereffects=subject.block(5).trials(1);
         cc=1;
@@ -55,12 +61,12 @@ for k=matexists'
                 targetcats(end+1)=subject.trial(subject.block(5).trials(cc)).targetcat;
             end
         end
-        names{4}='Aftereffects';
-        set{4}=aftereffects;
+        names{10}='Aftereffects';
+        set{10}=aftereffects;
         once=1;
     end
 
-    for g=1:4
+    for g=1:length(set)
         cats=[subject.trial(set{g}).targetcat];
         clear concat;
         for cat=1:3
@@ -109,17 +115,14 @@ colors=[1, 0, 0;
     1,1,0;
     1,0,1];
 
-
-for k=1:5
+figure(100)
+clf
+hold on
+for k=1:length(treatlabels)
     f=find(groupnums==k);
-    for g=1:4
-        subplot(5,4,g+(k-1)*4)
-        if k==1
-            title(names{g})
-        end
-        if g==1
-            ylabel(treatlabels{k})
-        end
+    for g=1:length(set)
+        subplot(length(treatlabels),length(set),g+(k-1)*length(set))
+        
         hold on
         for kk=1:length(f)
             for kkk=1:3
@@ -127,30 +130,36 @@ for k=1:5
             end
         end
         axis equal
-    end
-end
-
-figure(101)
-clf
-for k=1:5
-    f=find(groupnums==k);
-    for g=1:4
-        subplot(5,4,g+(k-1)*4)
         if k==1
             title(names{g})
         end
         if g==1
             ylabel(treatlabels{k})
         end
+    end
+end
+
+figure(101)
+clf
+for k=1:length(treatlabels)
+    f=find(groupnums==k);
+    for g=1:length(set)
+        subplot(length(treatlabels),length(set),g+(k-1)*length(set))
         hold on
         for cat=1:3
             tdesired=linspace(0,.65,100);
-            tlist=[s.block(g).cat(cat).val.t];
-            x=weightedAve(tlist,[s.block(g).cat(cat).val.x],tdesired,spaceconst);
-            y=weightedAve(tlist,[s.block(g).cat(cat).val.y],tdesired,spaceconst);
+            tlist=[s.block(g).cat(cat).val(f).t];
+            x=weightedAve(tlist,[s.block(g).cat(cat).val(f).x],tdesired,spaceconst);
+            y=weightedAve(tlist,[s.block(g).cat(cat).val(f).y],tdesired,spaceconst);
             plot(x,y,'k')
         end
         axis equal
+        if k==1
+            title(names{g})
+        end
+        if g==1
+            ylabel(treatlabels{k})
+        end
     end
 end
 

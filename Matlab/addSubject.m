@@ -101,6 +101,8 @@ for n=1:ns
                 subject.block(k).treatName=treatNames{4};
             elseif sum(find([subject.trial.treat]==4))>0
                 subject.block(k).treatName=treatNames{5};
+            elseif str2num(name)>100
+                subject.block(k).treatName='1995 Graphics';
             else
                 subject.block(k).treatName='';
             end
