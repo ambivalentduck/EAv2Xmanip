@@ -23,6 +23,7 @@ public:
 	
 private:
 	QSpinBox *trialNumBox, *subjectBox;
+	QDoubleSpinBox *delayBox;
 	QPushButton *startButton; 	
 	QComboBox *stimulusBox, *treatmentBox;
 	QFormLayout * layout;
@@ -56,7 +57,7 @@ private:
 	bool ExperimentRunning, inputReady, outputReady, ignoreInput, leftOrigin;
 	int trial, subject;
 	point origin, cursor, velocity, accel, target, force, center;
-	double min;
+	double min, visualdelay;
 	
 signals:
 	void endApp();
@@ -69,6 +70,7 @@ public slots:
 	
 	void setTreatment(int i) {treatment=treatments(i);}
 	void setStimulus(int i) {stimulus=stimuli(i);}
+	void setDelay(double d) {if (d<=0.0) visualdelay=-1; else visualdelay=d;}
 	
 };
 
