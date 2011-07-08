@@ -43,7 +43,7 @@ for n=1:ns
     name=names{n};
 
     input=load(['../Data/input',name,'.dat']);
-    %trial, treat, stim, targetx, targety
+    %trial, treat, stim, targetx, targety, (delay)?
     output=load(['../Data/output',name,'.dat']);
     try
         testaccess=output(f,13:14);
@@ -68,6 +68,9 @@ for n=1:ns
         subject.trial(k).treat=input(k,2);
         subject.trial(k).stim=input(k,3);
         subject.trial(k).targetcat=categories(k)-1;
+        if size(input,2)>5
+            subject.trial(k).delay=input(k,6);
+        end
 
         f=find(output(:,1)==k);
         subject.trial(k).trials=f;

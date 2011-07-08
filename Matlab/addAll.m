@@ -2,7 +2,7 @@ clc
 clear all
 close all
 tic
-for k=[1:40, 101:110]
+for k=[1:40, 104:110]
     if(~exist(['../Data/',num2str(k),'.mat']))
         try
             addSubject(num2str(k))
