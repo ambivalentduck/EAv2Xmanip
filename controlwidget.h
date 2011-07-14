@@ -23,6 +23,7 @@ public:
 	
 private:
 	QSpinBox *trialNumBox, *subjectBox;
+	QDoubleSpinBox *delayBox;
 	QPushButton *startButton; 	
 	QComboBox *stimulusBox, *treatmentBox;
 	QFormLayout * layout;
@@ -30,7 +31,7 @@ private:
 	DisplayWidget * userWidget;
 
 	void closeEvent(QCloseEvent *event);
-	void goGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(false); }
+	void goGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(true); }  //changed from false 
 	void unGray() {for(std::vector<QWidget*>::iterator it=grayList.begin();it!=grayList.end();++it) (*it)->setEnabled(true); }
 	point loadTrial(int T);
 	void noConsecutive(bool * array, int n);
@@ -48,14 +49,15 @@ private:
 	enum GameState {acquireTarget=0, inTarget=1} state;
 	std::vector<QWidget*> grayList;
 	std::vector<DisplayWidget::Sphere> sphereVec;
-	std::deque<double> times;
+	std::deque<timespec> times;
+	std::deque<QByteArray> data; 
 	DisplayWidget::Sphere sphere;
 
 	timespec zero, now, trialStart, targetAcquired;
 	bool ExperimentRunning, inputReady, outputReady, ignoreInput, leftOrigin;
 	int trial, subject;
 	point origin, cursor, velocity, accel, target, force, center;
-	double min;
+	double min, visualdelay;
 	
 signals:
 	void endApp();
@@ -68,6 +70,7 @@ public slots:
 	
 	void setTreatment(int i) {treatment=treatments(i);}
 	void setStimulus(int i) {stimulus=stimuli(i);}
+	void setDelay(double d) {if (d<=0.0) visualdelay=-1; else visualdelay=d;}
 	
 };
 

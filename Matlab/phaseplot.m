@@ -168,6 +168,6 @@ set(gca,'yticklabel',yticklabs);
 set(gca,'xlim',[1 L]);
 set(gca,'xtick',xtick);
 set(gca,'xticklabel',legends)
-title(name)
+title([name,', \tau = ',num2str(subject.tau,2)])
 
 end

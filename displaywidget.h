@@ -4,15 +4,20 @@
 #include <QGLWidget>
 #include <QRect>
 #include <QBasicTimer>
-#include <QMutex> 
+#include <QMutex>
+#include <QGLPixelBuffer>
 #include <vector>
 #include <deque>
 #include "point.h"
 
-#define LEFT .297l
-#define RIGHT -.317l
-#define TOP .277l
-#define BOTTOM .6834l
+
+#define LEFT .30728l
+#define RIGHT -.327556l
+#define TOP .2288l
+#define BOTTOM .692616l
+#define PROJECTORX -.014155l
+#define PROJECTORY .627688l
+#define PROJECTORZ 1.29l
 
 #define LOWERBAR .50l
 #define UPPERBAR .65l
@@ -42,7 +47,7 @@ public:
 	void setText(QString t) {dataMutex.lock(); text=t; dataMutex.unlock();}
 	
 private:
-	GLuint sphereList;
+	GLuint sphereList, dyntexture;
 	int W, H;
 	QBasicTimer timer;
 	std::vector<Sphere> spheres;
@@ -51,6 +56,7 @@ private:
 	QMutex dataMutex;
 	double min;
 	QString text;
+	QGLPixelBuffer * pbuffer;
 };
 
 #endif

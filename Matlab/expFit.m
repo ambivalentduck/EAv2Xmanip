@@ -1,7 +1,11 @@
 function [bestP,tau]=expFit(subject, p0)
 
-x=8:2:length(subject.block(3).trials);
-y=subject.maxperpendicular(x-1+subject.block(3).trials(1))';
+x=1:2:length(subject.block(3).trials)-1;
+%y=subject.times./log(subject.maxperpendicular);
+y=subject.maxperpendicular;
+y=y(x-1+subject.block(3).trials(1))';
+%y=subject.initialdirection(x-1+subject.block(3).trials(1))';
+
 plot(x,y)
 p0=[];
 
@@ -17,7 +21,7 @@ inicost=sum((y-f).^2)
 
 %% INITIAL OPTIMIZATION
 fprintf('=========Optimizing..');               % 
-p=lsqcurvefit('expDecay',p0,x,y,[0 0 1],[1e5 1e5 200]);               % INITIAL OPTIMIZATION
+p=lsqcurvefit('expDecay',p0,x,y,[0 0 1],[1e5 1e5 2000]);               % INITIAL OPTIMIZATION
 f=expDecay(p,x);                                % Eval
 cost=sum((y-f).^2);                             % evaluate the cost
 bestP=p; bestCost=cost;                         % init as best
@@ -33,7 +37,7 @@ for T=TempSchedule                              % loop: annealing temp
   fprintf('__Step%d(temp=%f)...',step,T); 
   p0New=p+T*rand(size(p));                      % simmulated annealing perturbation
   p=lsqcurvefit('expDecay',           ...       % OPTIMIZATON
-    p0New,x,y,[0 0 1],[1e5 1e5 200],options);                   % ... f=expDecay(p,x);                              % Eval based on solved params
+    p0New,x,y,[0 0 1],[1e5 1e5 2000],options);                   % ... f=expDecay(p,x);                              % Eval based on solved params
   cost=sum((y-f).^2);                           % cost evaluation 
   if cost<bestCost,                             % Choose if improved
     bestP=p; bestCost=cost;                     % new init guess as best

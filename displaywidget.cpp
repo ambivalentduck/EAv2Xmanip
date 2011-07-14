@@ -1,64 +1,15 @@
 #include "displaywidget.h"
 #include <GL/glu.h>
 #include <cmath>
-
-#define LEFTBAR .1l*LEFT+.9l*RIGHT
-
 #include <iostream>
 
-bool gluInvertMatrix(const double m[16], double invOut[16])
-{
-double inv[16], det;
-int i;
-
-inv[0] =   m[5]*m[10]*m[15] - m[5]*m[11]*m[14] - m[9]*m[6]*m[15]
-+ m[9]*m[7]*m[14] + m[13]*m[6]*m[11] - m[13]*m[7]*m[10];
-inv[4] =  -m[4]*m[10]*m[15] + m[4]*m[11]*m[14] + m[8]*m[6]*m[15]
-- m[8]*m[7]*m[14] - m[12]*m[6]*m[11] + m[12]*m[7]*m[10];
-inv[8] =   m[4]*m[9]*m[15] - m[4]*m[11]*m[13] - m[8]*m[5]*m[15]
-+ m[8]*m[7]*m[13] + m[12]*m[5]*m[11] - m[12]*m[7]*m[9];
-inv[12] = -m[4]*m[9]*m[14] + m[4]*m[10]*m[13] + m[8]*m[5]*m[14]
-- m[8]*m[6]*m[13] - m[12]*m[5]*m[10] + m[12]*m[6]*m[9];
-inv[1] =  -m[1]*m[10]*m[15] + m[1]*m[11]*m[14] + m[9]*m[2]*m[15]
-- m[9]*m[3]*m[14] - m[13]*m[2]*m[11] + m[13]*m[3]*m[10];
-inv[5] =   m[0]*m[10]*m[15] - m[0]*m[11]*m[14] - m[8]*m[2]*m[15]
-+ m[8]*m[3]*m[14] + m[12]*m[2]*m[11] - m[12]*m[3]*m[10];
-inv[9] =  -m[0]*m[9]*m[15] + m[0]*m[11]*m[13] + m[8]*m[1]*m[15]
-- m[8]*m[3]*m[13] - m[12]*m[1]*m[11] + m[12]*m[3]*m[9];
-inv[13] =  m[0]*m[9]*m[14] - m[0]*m[10]*m[13] - m[8]*m[1]*m[14]
-+ m[8]*m[2]*m[13] + m[12]*m[1]*m[10] - m[12]*m[2]*m[9];
-inv[2] =   m[1]*m[6]*m[15] - m[1]*m[7]*m[14] - m[5]*m[2]*m[15]
-+ m[5]*m[3]*m[14] + m[13]*m[2]*m[7] - m[13]*m[3]*m[6];
-inv[6] =  -m[0]*m[6]*m[15] + m[0]*m[7]*m[14] + m[4]*m[2]*m[15]
-- m[4]*m[3]*m[14] - m[12]*m[2]*m[7] + m[12]*m[3]*m[6];
-inv[10] =  m[0]*m[5]*m[15] - m[0]*m[7]*m[13] - m[4]*m[1]*m[15]
-+ m[4]*m[3]*m[13] + m[12]*m[1]*m[7] - m[12]*m[3]*m[5];
-inv[14] = -m[0]*m[5]*m[14] + m[0]*m[6]*m[13] + m[4]*m[1]*m[14]
-- m[4]*m[2]*m[13] - m[12]*m[1]*m[6] + m[12]*m[2]*m[5];
-inv[3] =  -m[1]*m[6]*m[11] + m[1]*m[7]*m[10] + m[5]*m[2]*m[11]
-- m[5]*m[3]*m[10] - m[9]*m[2]*m[7] + m[9]*m[3]*m[6];
-inv[7] =   m[0]*m[6]*m[11] - m[0]*m[7]*m[10] - m[4]*m[2]*m[11]
-+ m[4]*m[3]*m[10] + m[8]*m[2]*m[7] - m[8]*m[3]*m[6];
-inv[11] = -m[0]*m[5]*m[11] + m[0]*m[7]*m[9] + m[4]*m[1]*m[11]
-- m[4]*m[3]*m[9] - m[8]*m[1]*m[7] + m[8]*m[3]*m[5];
-inv[15] =  m[0]*m[5]*m[10] - m[0]*m[6]*m[9] - m[4]*m[1]*m[10]
-+ m[4]*m[2]*m[9] + m[8]*m[1]*m[6] - m[8]*m[2]*m[5];
-
-det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
-if (det == 0)
-        return false;
-
-det = 1.0 / det;
-
-for (i = 0; i < 16; i++)
-        invOut[i] = inv[i] * det;
-
-return true;
-}
+#define BUFFSIZE 1024
 
 DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 :QGLWidget(QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer), parent, 0, FullScreen?Qt::X11BypassWindowManagerHint:Qt::Widget)
 {
+	pbuffer = new QGLPixelBuffer(QSize(BUFFSIZE,BUFFSIZE),QGLFormat(QGL::DoubleBuffer|QGL::AlphaChannel|QGL::SampleBuffers|QGL::AccumBuffer),this);
+	
 	//Take care of window and input initialization.
 	timer.start(16, this); //Draw again shortly after constructor finishes
 	if(FullScreen)
@@ -71,7 +22,7 @@ DisplayWidget::DisplayWidget(QWidget *parent,bool FullScreen)
 	setAutoFillBackground(false); //Try to let glClear work...
 	setAutoBufferSwap(false); //Don't let QT swap automatically, we want to control timing.
 	backgroundColor=point(0,0,0);
-	min=.4436;
+	min=(fabs(LEFT-RIGHT)>fabs(TOP-BOTTOM)?fabs(TOP-BOTTOM):fabs(LEFT-RIGHT)); //Screen diameter (shortest dimension) known from direct observation, do not change
 }
 
 DisplayWidget::~DisplayWidget()
@@ -94,22 +45,34 @@ void DisplayWidget::initializeGL()
 	
 	glEnable(GL_POINT_SMOOTH);
 	glPointSize(1);
+	
+	pbuffer->makeCurrent();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	
+	glClearColor(0,0,0,1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glShadeModel(GL_FLAT);
+	glViewport(0,0,BUFFSIZE,BUFFSIZE);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(LEFT,RIGHT,BOTTOM,TOP,-1,1);
+
+	dyntexture=pbuffer->generateDynamicTexture();
 }
 
 void DisplayWidget::resizeGL(int w, int h)
 {
+	makeCurrent();
 	W=w; H=h;
 	glViewport(0,0, w, h);
 	glMatrixMode(GL_PROJECTION);
-	//gluPerspective(asin(fabs(TOP-BOTTOM)/1.39)*180l/3.13159l, fabs(LEFT-RIGHT)/fabs(TOP-BOTTOM), 0, 1);
-	//gluLookAt(-.099194,.5955l,1.39l,0l,.456l,0l,0l,-1l,0l);
-	//double projection[16], iprojection[16];
-	//glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	//gluInvertMatrix(projection, iprojection);
-	//glLoadIdentity();
-	glOrtho(LEFT,RIGHT,BOTTOM,TOP,1,-1);
-	//glMultMatrixd(iprojection);
-	//glLoadMatrixd(iprojection);
+	glLoadIdentity();
+	//Render from projector's perspective, projector must be 0,0,0, looking down -Z
+	glFrustum(LEFT-PROJECTORX,RIGHT-PROJECTORX,PROJECTORY-BOTTOM,PROJECTORY-TOP,.999*PROJECTORZ,1.495);
 	update();
 }
 
@@ -117,6 +80,8 @@ void DisplayWidget::paintGL()
 {
 	timer.stop();
 	dataMutex.lock();
+
+	pbuffer->makeCurrent();
 	glClearColor(backgroundColor.X(), backgroundColor.Y(), backgroundColor.Z(),1);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glShadeModel(GL_FLAT);
@@ -140,32 +105,31 @@ void DisplayWidget::paintGL()
 		glCallList(sphereList);
 		glPopMatrix();
 	}
-	
-	glColor3d(1,1,1);
-	renderText(LEFT,.39,0, text);
-	
-	//Goal is to allocate the rightmost 10th of the screen, draw rectangles with 1:height scaling
-	//Color should be green in band, fade to red outside it
-	//Band is purple
-	double barwidth=.1*(RIGHT-LEFTBAR)/double(times.size());
-	double left=LEFTBAR;
-	for(std::deque<double>::iterator it=times.begin();it!=times.end();++it)
-	{
-		double sat=exp(-pow((*it-(UPPERBAR+LOWERBAR)/2l)*5l,2));
-		glColor3d(1l-sat,sat,0);
-		glRectd(left,BOTTOM,left+barwidth,*it*(TOP-BOTTOM)+BOTTOM);
-		left+=barwidth;
-	}
-	if (times.size()>0)
-	{
-		glColor3d(1,0,1);
-		glRectd(LEFTBAR,BOTTOM+LOWERBAR*(TOP-BOTTOM)-.001,RIGHT,BOTTOM+LOWERBAR*(TOP-BOTTOM)+.001);
-		glRectd(LEFTBAR,BOTTOM+UPPERBAR*(TOP-BOTTOM)-.001,RIGHT,BOTTOM+UPPERBAR*(TOP-BOTTOM)+.001);
-	}
+
+	pbuffer->updateDynamicTexture(dyntexture);
+
+	makeCurrent();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glScaled(1,-1,1);
+	glTranslated(-PROJECTORX,-PROJECTORY,-PROJECTORZ); //Projector now ignored
+		
+	glClearColor(0,0,0,1);  //Unused area should be unlit
+	glClear(GL_COLOR_BUFFER_BIT);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D,dyntexture);
+	glBegin(GL_POLYGON);
+		glTexCoord2f(0,0); glVertex2f(LEFT,BOTTOM);
+		glTexCoord2f(0,1); glVertex2f(LEFT,TOP);
+		glTexCoord2f(1,1); glVertex2f(RIGHT,TOP);
+		glTexCoord2f(1,0); glVertex2f(RIGHT,BOTTOM);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 	
 	dataMutex.unlock();
 	swapBuffers();
-	//glFinish();  //Get precise timing, blocks until swap succeeds.  Swap happens during refresh.
+	glFinish();  //Get precise timing by recording time after this, blocks until swap succeeds.  Swap happens during refresh.
 	timer.start(15, this); //60 Hz = 16.6 ms, guarantee a paint in each refresh and almost immediately before refresh to minimize lag.
 }
 
