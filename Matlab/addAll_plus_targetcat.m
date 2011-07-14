@@ -13,7 +13,7 @@ end
 
 matexists=zeros(40,1);
 
-for k=1:40
+for k=[1:40 106]
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;
@@ -34,6 +34,13 @@ for k=matexists'
     c=c+1;
     load(['../Data/',num2str(k),'.mat']);
     numbers(c)=k;
+    try
+            output{k}.learnrate=subject.tau;
+        catch
+            [subject.expfitvals,subject.tau]=expFit(subject);
+            save(['../Data/',num2str(k),'.mat'],'subject')
+            output{k}.learnrate=subject.tau;
+    end
     try
         output{k}.rawvals=subject.maxperpendicular;
     catch
@@ -78,18 +85,24 @@ for cat=1:3
 
         fevalues(c)=mean(output{k}.rawvals(subject.block(4).ctrials(floor(end/2):end)));
 
-        
+
         persistvalues(c)=mean(output{k}.rawvals(subject.block(4).ctrials(1:ceil(end/3))))-mean(output{k}.rawvals(subject.block(4).ctrials(floor(2*end/3):end)));
-
-
+        
+        tauvalues(c)=output{k}.learnrate;
+        
         toc
     end
 
-    annotatedplot(1+(cat-1)*4,-echangevals,echangegroup,@anova1,'Error Change in Eval 1 - 2')
+%     annotatedplot(1+(cat-1)*4,-echangevals,echangegroup,@anova1,'Error Change in Eval 1 - 2')
+% 
+%     annotatedplot(2+(cat-1)*4,fevalues,echangegroup,@anova1,'Error Midway through Second Eval')
+% 
+%     annotatedplot(3+(cat-1)*4,persistvalues,echangegroup,@anova1,'Final Eror - Persistence')
+% 
+%     annotatedplot(4+(cat-1)*4,trainingvariability,echangegroup,@kruskalwallis,'Variability 2nd half of training')
 
-    annotatedplot(2+(cat-1)*4,fevalues,echangegroup,@anova1,'Error Midway through Second Eval')
+    f1=find(strcmp(echangegroup,'Null'));
+    f2=find(strcmp(echangegroup,'1995 Graphics'));
+    annotatedplot(4000+(cat-1)*4,tauvalues([f1;f2]),echangegroup([f1;f2]),@anova1,'Learning Time Constant')
 
-    annotatedplot(3+(cat-1)*4,persistvalues,echangegroup,@anova1,'Final Eror - Persistence')
-
-    annotatedplot(4+(cat-1)*4,trainingvariability,echangegroup,@kruskalwallis,'Variability 2nd half of training')
 end
