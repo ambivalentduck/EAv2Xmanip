@@ -13,7 +13,7 @@ end
 
 matexists=zeros(41,1);
 
-for k=[1:40, 101]
+for k=[1:40, 105:106]
     if(exist(['../Data/',num2str(k),'.mat']))
         matexists(k)=1;
     end

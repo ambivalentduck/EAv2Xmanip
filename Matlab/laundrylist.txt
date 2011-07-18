@@ -1,0 +1,6 @@
+Differences:
+arm support
+*delay
+curl vs visual rotation
+*evaluation catch trials during training
+2 could be the wrong number
