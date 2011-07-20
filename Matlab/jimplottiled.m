@@ -6,9 +6,11 @@ spaceconst=70;
 
 once=0;
 
+range=[1,2,5,7,10,11,13,15,19,21,22,26,27,29,30,301:320]; 
+
 matexists=zeros(120,1);
 
-for k=[1:40 102:106]
+for k=range
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;
@@ -130,8 +132,9 @@ for k=1:length(treatlabels)
             for kkk=1:3
                 plot(s.block(g).cat(kkk).val(f(kk)).x,s.block(g).cat(kkk).val(f(kk)).y,'b')
             end
+            axis equal
         end
-        axis equal
+        
         if k==1
             title(names{g})
         end
@@ -152,8 +155,8 @@ for k=1:length(treatlabels)
             x=weightedAve(tlist,[s.block(g).cat(cat).val(f).x],tdesired,spaceconst);
             y=weightedAve(tlist,[s.block(g).cat(cat).val(f).y],tdesired,spaceconst);
             plot(x,y,'k')
+            axis equal
         end
-        axis equal
         if k==1
             title(names{g})
         end

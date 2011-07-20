@@ -46,7 +46,7 @@ for n=1:ns
     %trial, treat, stim, targetx, targety, (delay)?
     output=load(['../Data/output',name,'.dat']);
     try
-        testaccess=output(f,13:14);
+        testaccess=output(:,13:14);
     catch
         fixbroken(['output',name,'.dat']);
         output=load(['../Data/output',name,'.dat']);
@@ -70,6 +70,8 @@ for n=1:ns
         subject.trial(k).targetcat=categories(k)-1;
         if size(input,2)>5
             subject.trial(k).delay=input(k,6);
+        else
+            subject.trial(k).delay=zeros(size(input(k,3)));
         end
 
         f=find(output(:,1)==k);
@@ -96,18 +98,32 @@ for n=1:ns
         if k~=3
             subject.block(k).treatName='';
         else
-            if sum(find([subject.trial.treat]==1))>0
-                subject.block(k).treatName=treatNames{2};
-            elseif sum(find([subject.trial.treat]==2))>0
-                subject.block(k).treatName=treatNames{3};
-            elseif sum(find([subject.trial.treat]==3))>0
-                subject.block(k).treatName=treatNames{4};
-            elseif sum(find([subject.trial.treat]==4))>0
-                subject.block(k).treatName=treatNames{5};
-            elseif str2num(name)>100
-                subject.block(k).treatName='1995 Graphics';
+            if sum(find([subject.trial.delay]>0))>0
+                if sum(find([subject.trial.treat]==1))>0
+                    subject.block(k).treatName=['Delay + ',treatNames{2}];
+                elseif sum(find([subject.trial.treat]==2))>0
+                    subject.block(k).treatName=['Delay + ',treatNames{3}];
+                elseif sum(find([subject.trial.treat]==3))>0
+                    subject.block(k).treatName=['Delay + ',treatNames{4}];
+                elseif sum(find([subject.trial.treat]==4))>0
+                    subject.block(k).treatName=['Delay + ',treatNames{5}];
+                else
+                    subject.block(k).treatName='Delay';
+                end
             else
-                subject.block(k).treatName='';
+                if sum(find([subject.trial.treat]==1))>0
+                    subject.block(k).treatName=treatNames{2};
+                elseif sum(find([subject.trial.treat]==2))>0
+                    subject.block(k).treatName=treatNames{3};
+                elseif sum(find([subject.trial.treat]==3))>0
+                    subject.block(k).treatName=treatNames{4};
+                elseif sum(find([subject.trial.treat]==4))>0
+                    subject.block(k).treatName=treatNames{5};
+                elseif str2num(name)>100
+                    subject.block(k).treatName='1995 Graphics';
+                else
+                    subject.block(k).treatName='';
+                end
             end
         end
         if (k~=2) && (k~=3)

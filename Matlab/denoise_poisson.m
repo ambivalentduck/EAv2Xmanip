@@ -1,5 +1,10 @@
 function out=denoise_poisson(in)
 
+if ischar(in)
+    out=['Denoised ',in];
+    return;
+end
+
 u=in;
 f=movingmin(in,5);
 
