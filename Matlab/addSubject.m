@@ -132,6 +132,9 @@ for n=1:ns
             subject.block(k).stimName='Curl';
         end
     end
+    try
+        subject.number=str2num(name);
+    end
     save(['../Data/',name,'.mat'],'subject')
     toc
 end

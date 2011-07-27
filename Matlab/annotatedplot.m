@@ -25,9 +25,11 @@ ticks=get(gca,'ytick');
 fails=[];
 
 for k=1:length(ticks)
+    if nargin<6
     f=find(strcmp(group,labels{k}));
     vals=values(f);
     plot(vals,ticks(k)*ones(size(vals)),'x')
+    end
 
     try
         [svals,ind]=sort(vals);
