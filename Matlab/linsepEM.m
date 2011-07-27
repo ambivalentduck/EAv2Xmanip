@@ -15,6 +15,7 @@ while (split~=oldsplit)&&(ITER<1000)
     ITER=ITER+1;
     oldsplit=split;
     split=linprob(data,params{ITER}.p);
+    params{ITER+1}.split=split;
     params{ITER+1}.p{1}=linfit(data(1:split,:));
     params{ITER+1}.p{2}=linfit(data(split+1:end,:));
     if split==0

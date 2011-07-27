@@ -1,4 +1,4 @@
-function tau=getNewTau(sub,plot)
+function [tau,split]=getNewTau(sub,plot)
 
 if isa(sub,'double')
     try
@@ -35,4 +35,5 @@ else
 end
 
 temp=[p{end}.p{:}];
-tau=-1./[temp.m];
+tau=abs(1./[temp.m]);
+split=p{end}.split;

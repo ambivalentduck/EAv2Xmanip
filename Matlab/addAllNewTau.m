@@ -27,8 +27,11 @@ l=length(matexists);
 
 tauvalues=cell(l,1);
 group=cell(l,1);
-delaygroup=zeros(l,1);
-eagroup=zeros(l,1);
+
+split=zeros(l,1);
+eagroup=split;
+delaygroup=split;
+
 
 output={};
 c=0;
@@ -59,15 +62,22 @@ for k=matexists'
         group{c}='Null';
     end
     
-    tauvalues{c}=getNewTau(k);
-    %tauvalues(c)=getNewTau(subject);
+    [tauvalues{c},split(c)]=getNewTau(subject);
 
     toc
 end
 
-try 
-    tauvalues=[tauvalues{1:end}];
+slowtau=zeros(size(tauvalues));
+fasttau=slowtau;
+
+for k=1:length(tauvalues)
+    fasttau(k)=min(tauvalues{k});
+    slowtau(k)=max(tauvalues{k});
 end
 
-p=anovan(tauvalues,{eagroup,delaygroup})
-annotatedplot(400,tauvalues,group,@anova1,'Tau') %,'noplot')
+pslow=anovan(slowtau,{eagroup,delaygroup})
+pfast=anovan(fasttau,{eagroup,delaygroup})
+psplit=anovan(split,{eagroup,delaygroup})
+annotatedplot(400,slowtau,group,@anova1,'Slow Tau') %,'noplot')
+annotatedplot(401,fasttau,group,@anova1,'Fast Tau') %,'noplot')
+annotatedplot(402,split,group,@anova1,'Split') %,'noplot')
