@@ -1,6 +1,5 @@
 clc
 clear all
-close all
 tic
 
 range=[1,2,5,7,10,11,13,15,19,21,22,26,27,29,30,301:320];
@@ -22,18 +21,12 @@ for k=range
     end
 end
 
+
 matexists=find(matexists);
 l=length(matexists);
 
-tauvalues=cell(l,1);
 group=cell(l,1);
 
-split=zeros(l,1);
-eagroup=split;
-delaygroup=split;
-
-
-output={};
 c=0;
 toc
 names={'Delay','Delay + EA','','EA'};
@@ -48,7 +41,7 @@ for k=matexists'
         continue
     end
     c=c+1;
-    
+
     if sum(strcmp(subject.block(3).treatName,delay))>0
         delaygroup(c)=1;
     end
@@ -56,28 +49,58 @@ for k=matexists'
     if sum(strcmp(subject.block(3).treatName,ea))>0
         eagroup(c)=1;
     end
-    
+
     group{c}=subject.block(3).treatName;
     if isempty(group{c})
         group{c}='Null';
     end
+
+    %%%%%%% Get perp dists
+    for k=1:length(subject.trial)
+        x=subject.trial(k).drawn;
+        o=x(1,:);
+        x=[x(:,1)-o(1), x(:,2)-o(2)];
+
+        try
+            M=subject.trial(k).target-o;
+        catch
+            M=subject.trial(k).target'-o;
+        end
+        dists=zeros(length(subject.trial(k).time),1);
+        for kk=1:length(subject.trial(k).time)
+            dists(kk)=norm(x(kk,:)-(dot(x(kk,:),M)/dot(M,M))*M);
+        end
+    end
     
-    [tauvalues{c},split(c)]=getNewTau(subject);
+    completiontime=zeros(length(f),1);
+    for kk=1:length(f)
+        dat=subject.trial(f(kk));
+        target=dat.target;
+        x=dat.drawn;
+        t=dat.time';
+        o=dat.origin;
+
+        x=[x(:,1)-o(1), x(:,2)-o(2)];
+
+        d=sqrt(x(:,1).^2 + x(:,2).^2);
+        cc=1;
+        while d(cc)<(.4436/50+.4436/25)
+            cc=cc+1;
+        end
+        t=t-t(cc);
+        ft=find(t>=0);
+        concat(cat,kk).t=t(ft);
+        completiontime(kk)=t(end);
+    
 
     toc
 end
 
-slowtau=zeros(size(tauvalues));
-fasttau=slowtau;
 
-for k=1:length(tauvalues)
-    fasttau(k)=min(tauvalues{k});
-    slowtau(k)=max(tauvalues{k});
-end
 
-pslow=anovan(slowtau,{eagroup,delaygroup},'noplot')
-pfast=anovan(fasttau,{eagroup,delaygroup},'noplot')
-psplit=anovan(split,{eagroup,delaygroup},'noplot')
-annotatedplot(400,slowtau,group,@kruskalwallis,'Slow Tau','noplot')
-annotatedplot(401,fasttau,group,@anova1,'Fast Tau') %,'noplot')
-annotatedplot(402,split,group,@anova1,'Split') %,'noplot')
+
+
+
+
+
+
