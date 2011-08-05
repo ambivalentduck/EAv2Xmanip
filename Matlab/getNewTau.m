@@ -24,7 +24,7 @@ end
 
 [v,i]=min(data);
 
-datat=[(1:length(data))',log(data-min(data))];
+datat=[(1:length(data))',log(data-v)];
 
 datat=datat((1:length(data))~=i,:);
 

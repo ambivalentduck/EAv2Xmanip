@@ -86,8 +86,7 @@ template<typename T> double Point<T>::dist(Point<T> p2) {return sqrt((p[0]-p2.p[
 template<typename T> T Point<T>::linedist(Point<T> x0, Point<T> x1)
 {
 	Point<T> M=(x1-x0);
-	T m=M.mag();
-	return (M*(x0-*this)).mag()/(m*m);
+	return (*this-(*this|M)).mag()/(M|M); //Underwent changes recently, needs *thorough* checking
 }
 template<typename T> T Point<T>::raydist(Point<T> x0, Point<T> x1) 
 {

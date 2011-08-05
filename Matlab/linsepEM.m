@@ -4,7 +4,7 @@ function params=linsepEM(data)
 
 L=size(data,1);
 
-split=15 %floor(L/2);
+split=15; %floor(L/2);
 params{1}.p{1}=linfit(data(1:split,:));
 params{1}.p{2}=linfit(data(split+1:end,:));
 
