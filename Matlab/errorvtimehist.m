@@ -59,6 +59,7 @@ if ~exist('errorvtimedata.mat')
 
         %%%%%%% Get perp dists
         trials=subject.block(3).trials(end-20:end);
+        data{c}.num=M;
         data{c}.cat=zeros(length(trials),1);
         for k=trials
             x=subject.trial(k).drawn;
@@ -80,7 +81,7 @@ if ~exist('errorvtimedata.mat')
             theta=-atan2(M(2),M(1));
             rot=[cos(theta),-sin(theta);sin(theta),cos(theta)];
             y=(rot*x');
-            data{c}.error{k-trials(1)+1}=y(:,2);
+            data{c}.error{k-trials(1)+1}=y(2,:);
 
             if subject.trial(k).targetcat~=0
                 data{c}.cat(k-trials(1)+1)=subject.trial(k).targetcat;
@@ -103,6 +104,9 @@ cats=[-3 3 -2 2 -1 1];
 tlims=linspace(0,1,100);
 elims=linspace(0,.014,100);
 
+figure(8)
+clf
+
 for k=1:length(a)
     fk=find(c==k);
     figure(k)
@@ -113,12 +117,41 @@ for k=1:length(a)
             fc=find(data{fk(kk)}.cat==cats(k2));
             error=[data{fk(kk)}.error{fc}];
             t=[data{fk(kk)}.t{fc}];
-            [n,x,y]=hist2d(t,error,10,10);
+            concat_error{k,k2}=error;
+            concat_t{k,k2}=t;
+            [n,x,y]=hist2d(t,error,20,20);
+            for kkk=1:size(n,2)
+                n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
+            end
             imagesc(x(1,:),y(:,1),n)
+            if kk==1
+                ylabel(num2str(cats(k2)))
+            end
+            if k2==length(cats)
+                xlabel(num2str(data{fk(kk)}.num))
+            end
         end
     end
     suplabel(a{k},'t');
+    suplabel('yy','Movement Direction');
+
+    figure(8)
+    for k2=1:length(cats)
+        subplot(6,length(a),length(a)*(k2-1)+k)
+        [n,x,y]=hist2d([concat_t{k,:}],[concat_error{k,:}],20,20);
+        for kkk=1:size(n,2)
+            n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
+        end
+        imagesc(x(1,:),y(:,1),n)
+        if k==1
+            ylabel(num2str(cats(k2)))
+        end
+        if k2==length(cats)
+            xlabel(a{k})
+        end
+    end
 end
+suplabel('yy','Movement Direction');
 
 
 
