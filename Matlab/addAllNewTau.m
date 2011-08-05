@@ -62,7 +62,7 @@ for k=matexists'
         group{c}='Null';
     end
     
-    [tauvalues{c},split(c)]=getNewTau(subject);
+    [tauvalues{c},split(c)]=getNewTau(k);
 
     toc
 end

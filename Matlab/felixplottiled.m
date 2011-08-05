@@ -5,10 +5,11 @@ close all
 spaceconst=70;
 
 once=0;
+range=[1,2,5,7,10,11,13,15,19,21,22,26,27,29,30,302:320];
 
 matexists=zeros(40,1);
 
-for k=[1:40 102]
+for k=range
     if(exist(['../Data/',num2str(k),'.mat']))
         if sum(k==[24])==0
             matexists(k)=1;

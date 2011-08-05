@@ -170,4 +170,5 @@ set(gca,'xtick',xtick);
 set(gca,'xticklabel',legends)
 title([name,', \tau = ',num2str(subject.tau,2)])
 
+
 end

@@ -1,0 +1,10 @@
+function out=fittsconstant(varargin)
+
+if strcmp(varargin{1},'ylabel')
+    out='SA TO's Constant';
+    return
+end
+
+subject=varargin{1};
+
+out=-reachtimes(subject)maxperpendicular(subject);
