@@ -101,13 +101,7 @@ end
 cats=[-3 3 -2 2 -1 1];
 [a,b,c]=unique(group);
 
-tlims=linspace(0,1,100);
-elims=linspace(0,.014,100);
-
-figure(8)
-clf
-
-eightorder=[2 4 1 3];
+numbins=20;
 
 for k=1:length(a)
     fk=find(c==k);
@@ -121,7 +115,7 @@ for k=1:length(a)
             t=[data{fk(kk)}.t{fc}];
             concat_error{k,k2}=error;
             concat_t{k,k2}=t;
-            [n,x,y]=hist2d(t,error,20,20);
+            [n,x,y]=hist2d(t,error,numbins,numbins);
             for kkk=1:size(n,2)
                 n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
             end
@@ -136,11 +130,17 @@ for k=1:length(a)
     end
     suplabel(a{k},'t');
     suplabel('yy','Movement Direction');
+end
 
-    figure(8)
+figure(8)
+clf
+eightorder=[2 4 1 3];
+[dummy,tbins]=hist([concat_t{:,:}],numbins);
+[dummy,errorbins]=hist([concat_error{:,:}],numbins);
+for k=1:length(a)
     for k2=1:length(cats)
         subplot(6,length(a),length(a)*(k2-1)+eightorder(k))
-        [n,x,y]=hist2d([concat_t{k,k2}],[concat_error{k,k2}],20,20);
+        [n,x,y]=hist2d(concat_t{k,k2},concat_error{k,k2},tbins,errorbins);
         for kkk=1:size(n,2)
             n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
         end
