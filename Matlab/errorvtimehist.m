@@ -2,7 +2,7 @@ clc
 clear all
 tic
 
-%delete('errorvtimedata.mat')
+delete('errorvtimedata.mat')
 if ~exist('errorvtimedata.mat')
     range=[1,2,5,7,10,11,13,15,19,21,22,26,27,29,30,301:320];
 
