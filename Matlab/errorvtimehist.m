@@ -107,6 +107,8 @@ elims=linspace(0,.014,100);
 figure(8)
 clf
 
+eightorder=[2 4 1 3];
+
 for k=1:length(a)
     fk=find(c==k);
     figure(k)
@@ -137,13 +139,13 @@ for k=1:length(a)
 
     figure(8)
     for k2=1:length(cats)
-        subplot(6,length(a),length(a)*(k2-1)+k)
-        [n,x,y]=hist2d([concat_t{k,:}],[concat_error{k,:}],20,20);
+        subplot(6,length(a),length(a)*(k2-1)+eightorder(k))
+        [n,x,y]=hist2d([concat_t{k,k2}],[concat_error{k,k2}],20,20);
         for kkk=1:size(n,2)
             n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
         end
         imagesc(x(1,:),y(:,1),n)
-        if k==1
+        if eightorder(k)==1
             ylabel(num2str(cats(k2)))
         end
         if k2==length(cats)
