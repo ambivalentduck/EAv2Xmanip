@@ -93,6 +93,10 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	userWidget->show();
 
 	sphereVec.clear();
+	sphere.color=point(0,.5,0);
+	sphere.position=center;
+	sphere.radius=min;
+	sphereVec.push_back(sphere);
 	sphere.color=point(.5,.5,.5);
 	sphere.position=center;
 	sphere.radius=min/2l;
