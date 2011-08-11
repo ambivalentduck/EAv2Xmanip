@@ -58,7 +58,7 @@ if ~exist('errorvtimedata.mat')
         end
 
         %%%%%%% Get perp dists
-        trials=subject.block(3).trials(end-20:end);
+        trials=subject.block(4).trials;
         data{c}.num=M;
         data{c}.cat=zeros(length(trials),1);
         for k=trials
@@ -116,9 +116,9 @@ for k=1:length(a)
             concat_error{k,k2}=error;
             concat_t{k,k2}=t;
             [n,x,y]=hist2d(t,error,numbins,numbins);
-            for kkk=1:size(n,2)
-                n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
-            end
+%             for kkk=1:size(n,2)
+%                 n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
+%             end
             imagesc(x(1,:),y(:,1),n)
             if kk==1
                 ylabel(num2str(cats(k2)))
@@ -141,9 +141,9 @@ for k=1:length(a)
     for k2=1:length(cats)
         subplot(6,length(a),length(a)*(k2-1)+eightorder(k))
         [n,x,y]=hist2d(concat_t{k,k2},concat_error{k,k2},tbins,errorbins);
-        for kkk=1:size(n,2)
-            n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
-        end
+%         for kkk=1:size(n,2)
+%             n(:,kkk)=(n(:,kkk)-min(n(:,kkk)))/max(n(:,kkk));
+%         end
         imagesc(x(1,:),y(:,1),n)
         if eightorder(k)==1
             ylabel(num2str(cats(k2)))

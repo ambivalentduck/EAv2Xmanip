@@ -75,9 +75,9 @@ for k=1:length(tauvalues)
     slowtau(k)=max(tauvalues{k});
 end
 
-pslow=anovan(slowtau,{eagroup,delaygroup},'noplot')
-pfast=anovan(fasttau,{eagroup,delaygroup},'noplot')
-psplit=anovan(split,{eagroup,delaygroup},'noplot')
+pslow=anovan(slowtau,{eagroup,delaygroup})
+pfast=anovan(fasttau,{eagroup,delaygroup})
+psplit=anovan(split,{eagroup,delaygroup})
 annotatedplot(400,slowtau,group,@kruskalwallis,'Slow Tau','noplot')
 annotatedplot(401,fasttau,group,@anova1,'Fast Tau') %,'noplot')
 annotatedplot(402,split,group,@anova1,'Split') %,'noplot')
