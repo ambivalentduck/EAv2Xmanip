@@ -56,6 +56,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	stimulusBox->insertItem(1,"Curl");
 	stimulusBox->insertItem(2,"Saddle");
 	stimulusBox->insertItem(3,"Rotation 45");
+	stimulusBox->insertItem(4,"Rotation Flip");
 	grayList.push_back(stimulusBox);
 	stimulus=UNSTIMULATED;
 	connect(stimulusBox, SIGNAL(activated(int)), this, SLOT(setStimulus(int)));
@@ -129,6 +130,19 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	sphere.position=point(RIGHT,BOTTOM);
 	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
+	
+	
+	/* double mcorr=min-.02l;
+	point temp;
+	for(double k=0;k<2*3.14159l;k+=.01)
+	{
+		sphere.color=point(0,0,1);
+		temp=unit.rotateZero(k);
+		temp.Y()+=.4l;
+		sphere.position=temp*(mcorr/1.5l)*.6l+center-point(0,mcorr/6l);
+		sphere.radius=calRadius;
+		sphereVec.push_back(sphere);
+	} */
 	userWidget->setSpheres(sphereVec);
 
 	curl=0;
@@ -166,7 +180,10 @@ void ControlWidget::readPending()
 			curl=0;
 			saddle=SADDLEVAL;
 			break;
-
+		default:
+			curl=0;
+			saddle=0;
+			break;
 		}
 		out.append(reinterpret_cast<char*>(&curl),sizeof(double));
 		out.append(reinterpret_cast<char*>(&saddle),sizeof(double));
@@ -219,14 +236,16 @@ void ControlWidget::readPending()
 	sphereVec.push_back(sphere);
 	//Cursor
 	sphere.color=point(0,0,1); //Blue
-
-	swtich(stimulus)
+	
+	point temp;
+	switch(stimulus)
 	{
-		case: ROTATION45
+		case ROTATION45:
 			cursor=(cursor-center).rotateZero(-3.14159l/4l)+center;
 			break;
-		case: ROTATIONFLIP
-			cursor=point((cursor.X()+cursor.Y())/2l,(cursor.X()-cursor.Y())/2l);
+		case ROTATIONFLIP:
+			temp=cursor-center;
+			cursor=point((temp.X()+temp.Y())/2l,(temp.X()-temp.Y())/2l)+center;
 			break;
 		default:
 			break;
@@ -297,7 +316,10 @@ void ControlWidget::readPending()
 		curl=0;
 		saddle=SADDLEVAL;
 		break;
-
+	default:
+		curl=0;
+		saddle=0;
+		break;
 	}
 	out.append(reinterpret_cast<char*>(&curl),sizeof(double));
 	out.append(reinterpret_cast<char*>(&saddle),sizeof(double));
