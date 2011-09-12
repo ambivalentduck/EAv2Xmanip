@@ -126,6 +126,15 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	sphere.radius=calRadius;
 	sphereVec.push_back(sphere);
 	userWidget->setSpheres(sphereVec);
+	
+	double mcorr=min-.02l;
+	for(double k=0;k<3.14159l;k+=.01)
+	{
+		sphere.color=point(.8,.8,.8);
+		sphere.position=unit.rotateZero(k)*(mcorr/1.5l)+center-point(0,mcorr/6l);
+		sphere.radius=calRadius;
+		sphereVec.push_back(sphere);
+	}
 
 	curl=0;
 	saddle=0;

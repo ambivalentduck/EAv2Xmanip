@@ -1,7 +1,7 @@
 function makerandomwalkinput
 
 global reachdist
-reachdist=.8;
+reachdist=.45;
 
 fhandle=fopen('../Data/input608.dat','wt');
 
@@ -11,22 +11,22 @@ x=zeros(430,2);
 for k=1:28
     pos=genpos(pos);
     x(k,:)=pos;
-    fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,0,0,pos(1),pos(2));
+    fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,0,0,pos(1),pos(2)-.4);
 end
 
 pos=gotozero(pos);
 x(29,:)=pos;
-fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,0,0,pos(1),pos(2));
+fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',29,0,0,pos(1),pos(2)-.4);
 
 x(30,:)=[0 0];
-fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,0,0,0,0);
+fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',30,0,0,0,0);
 
 norm(pos)
 
 for k=31:430
     pos=genpos(pos);
     x(k,:)=pos;
-    fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,mod(k,2),4,pos(1),pos(2));
+    fprintf(fhandle, '%i\t%i\t%i\t%6.6f\t%6.6f\n',k,mod(k,2),4,pos(1),pos(2)-.4);
 end
 
 figure(1)
@@ -57,7 +57,7 @@ global reachdist
 k=0;
 first=1;
 out=[inf,inf];
-while ((norm(out)>1)&&(k<1000))||first==1
+while ((norm(out)>.5)&&(k<1000))||first==1
     first=0;
     theta=rand*360;
     out=in+[cos(theta),sin(theta)]*reachdist;
