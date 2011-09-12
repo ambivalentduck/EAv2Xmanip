@@ -11,13 +11,13 @@
 #include "point.h"
 
 
-#define LEFT .30728l
-#define RIGHT -.327556l
-#define TOP .2288l
-#define BOTTOM .692616l
-#define PROJECTORX -.014155l
-#define PROJECTORY .627688l
-#define PROJECTORZ 1.29l
+#define LEFT .3193l
+#define RIGHT -.3334l
+#define TOP .2203l
+#define BOTTOM .7033l
+#define PROJECTORX -.02524l
+#define PROJECTORY .670401l
+#define PROJECTORZ 1.25l
 
 #define LOWERBAR .50l
 #define UPPERBAR .65l
