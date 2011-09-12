@@ -220,7 +220,17 @@ void ControlWidget::readPending()
 	//Cursor
 	sphere.color=point(0,0,1); //Blue
 
-	if (stimulus==ROTATION45) cursor=(cursor-center).rotateZero(-3.14159l/4l)+center;
+	swtich(stimulus)
+	{
+		case: ROTATION45
+			cursor=(cursor-center).rotateZero(-3.14159l/4l)+center;
+			break;
+		case: ROTATIONFLIP
+			cursor=point((cursor.X()+cursor.Y())/2l,(cursor.X()-cursor.Y())/2l);
+			break;
+		default:
+			break;
+	}
 
 	switch(treatment)
 	{

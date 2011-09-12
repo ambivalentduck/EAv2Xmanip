@@ -2,7 +2,10 @@ clc
 clear all
 close all
 tic
-for k=[1:40, 104:110]
+
+range=[1,2,5,7,10,11,13,15,19,21,22,26,27,29,30,301:320];
+
+for k=range
     if(~exist(['../Data/',num2str(k),'.mat']))
         try
             addSubject(num2str(k))
@@ -11,9 +14,9 @@ for k=[1:40, 104:110]
     end
 end
 
-matexists=zeros(41,1);
+matexists=zeros(400,1);
 
-for k=[1:40, 105:106]
+for k=range
     if(exist(['../Data/',num2str(k),'.mat']))
         matexists(k)=1;
     end
@@ -40,11 +43,16 @@ echangegroup=cell(l,1);
 output={};
 c=0;
 toc
+names={'Delay','Delay + EA','','EA'};
+
+
 numbers=zeros(size(matexists));
 for k=matexists'
-    k=102
-    c=c+1;
     load(['../Data/',num2str(k),'.mat']);
+    if sum(strcmp(subject.block(3).treatName,names))==0
+        continue
+    end
+    c=c+1;
     numbers(c)=k;
         try
             output{k}.rawvals=subject.maxperpendicular;
@@ -94,10 +102,7 @@ for k=matexists'
     if isempty(group{c})
         group{c}='Null';
     end
-
-
-
-
+    
     f=find([subject.trial(subject.block(2).trials).stim]~=0);
     exes2=subject.block(2).trials(f);
 
@@ -125,18 +130,21 @@ for k=matexists'
     toc
 end
 
-annotatedplot(1,-aftereffectsvals,aftereffectsgroup,@anova1,'After-Effects')
 
-annotatedplot(2,-echangevals,echangegroup,@anova1,'Error Change in Eval 1 - 2')
 
-annotatedplot(3,fevalues,echangegroup,@anova1,'Error Midway through Second Eval')
+annotatedplot(1,-aftereffectsvals(1:c),aftereffectsgroup(1:c),@anova1,'After-Effects')
 
-annotatedplot(4,persistvalues,echangegroup,@anova1,'Final Eror - Persistence')
+annotatedplot(2,-echangevals(1:c),echangegroup(1:c),@anova1,'Error Change in Eval 1 - 2')
 
-annotatedplot(6,trainingvariability,echangegroup,@kruskalwallis,'Variability 2nd half of training')
+annotatedplot(3,fevalues(1:c),echangegroup(1:c),@anova1,'Error Midway through Second Eval')
 
-annotatedplot(7,-vchangevals,echangegroup,@anova1,'Change in Variability Eval 1 - 2')
+annotatedplot(4,persistvalues(1:c),echangegroup(1:c),@anova1,'Final Eror - Persistence')
 
+annotatedplot(6,trainingvariability(1:c),echangegroup(1:c),@kruskalwallis,'Variability 2nd half of training')
+
+annotatedplot(7,-vchangevals(1:c),echangegroup(1:c),@anova1,'Change in Variability Eval 1 - 2')
+
+tauvalues=tauvalues(1:c);
 fi=find(tauvalues<175);
 annotatedplot(5,tauvalues(fi),taugroup(fi),@anova1,'Tau','noplot')
 %annotatedplot(5,tauvalues,taugroup,@kruskalwallis,'Tau','noplot','this is dumb')
