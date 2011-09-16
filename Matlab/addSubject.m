@@ -73,7 +73,6 @@ for n=1:ns
         else
             subject.trial(k).delay=zeros(size(input(k,3)));
         end
-
         f=find(output(:,1)==k);
         subject.trial(k).trials=f;
         subject.trial(k).time=output(f,2);
