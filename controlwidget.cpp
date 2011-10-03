@@ -238,8 +238,8 @@ void ControlWidget::readPending()
 			if (initialdirectionerror.size()==6)
 			{
 				double newer=(initialdirectionerror[6]+initialdirectionerror[5]+initialdirectionerror[4]);
-				double older=(initialdirectionerror[3]+initialdirectionerror[2]+initialdirectionerror[1])
-				double delta_ide=(newer-older)/newer;;
+				double older=(initialdirectionerror[3]+initialdirectionerror[2]+initialdirectionerror[1]);
+				double delta_ide=(newer-older)/newer;
 				if (delta_ide>.1) adaptive--;
 				else if(delta_ide<-.0909) adaptive++;
 					
@@ -287,14 +287,14 @@ void ControlWidget::readPending()
 			sphere.position=cursor+cursor.linepointvec(origin, target); 
 			//cursor + the vector that points from the line intersecting both origin and target to the cursor.
 			break;
+		case EA_ADAPTIVE:
+			sphere.position=cursor+cursor.linepointvec(origin, target)*(.1l*adaptive);
+			break;
 		case X2:
 			double mcorr=min-.02l;
 			sphere.position=cursor*2-(center-point(0,mcorr/6l));
 			//sphere.position=cursor*2-center;  //About zero. 
 			//Doubles the distance between the cursor and origin ONLY makes sense in the context of center-out reaching
-			break;
-		case EA_ADAPTIVE:
-			sphere.position=cursor+(.1l*adaptive)*cursor.linepointvec(origin, target);
 			break;
 	}
 	outStream << sphere.position.X() TAB sphere.position.Y() << endl;
@@ -414,6 +414,7 @@ void ControlWidget::closeEvent(QCloseEvent *event)
 point ControlWidget::loadTrial(int T)
 {
 	trial=T;
+	initialdirectionnoted=false;
 	if(trialFile.atEnd()) emit(endApp());
 
 	char line[201];
@@ -444,5 +445,4 @@ point ControlWidget::loadTrial(int T)
 	std::cout << "Finished Loading Trial " << temptrial << std::endl;
 	double mcorr=min-.02l;
 	return temppoint*(mcorr/1.5l)+center-point(0,mcorr/6l);
-	initialdirectionnoted=false;
 }
