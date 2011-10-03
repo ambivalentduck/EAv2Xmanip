@@ -11,6 +11,7 @@
 #define CURLVAL -20  //Should be -20, changed for Justin
 #define SADDLEVAL 10
 #define TIME_OFFSET .25l
+#define initialDirectionTime .1l
 
 ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->primaryScreen()))
 {
@@ -154,6 +155,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 		sphereVec.push_back(sphere);
 	}
 
+	adaptive=0;
 	curl=0;
 	saddle=0;
 	trial=0;
@@ -227,6 +229,22 @@ void ControlWidget::readPending()
 
 	if (!leftOrigin) trialStart=now;
 	if(!leftOrigin) if (cursor.dist(origin)>(oRadius+cRadius)) leftOrigin=true;
+	if ((treatment==EA_ADAPTIVE)&leftOrigin&!initialdirectionnoted) 
+		if ((now-trialStart)>initialDirectionTime)
+		{
+			initialdirectionnoted=true;
+			initialdirectionerror.push_back(atan2(cursor.Y()-origin.Y(),cursor.X()-origin.X()));
+			while(initialdirectionerror.size()>6) initialdirectionerror.pop_front();
+			if (initialdirectionerror.size()==6)
+			{
+				double newer=(initialdirectionerror[6]+initialdirectionerror[5]+initialdirectionerror[4]);
+				double older=(initialdirectionerror[3]+initialdirectionerror[2]+initialdirectionerror[1])
+				double delta_ide=(newer-older)/newer;;
+				if (delta_ide>.1) adaptive--;
+				else if(delta_ide<-.0909) adaptive++;
+					
+			}
+		}
 
 	sphereVec.clear();
 	//Target
@@ -274,6 +292,9 @@ void ControlWidget::readPending()
 			sphere.position=cursor*2-(center-point(0,mcorr/6l));
 			//sphere.position=cursor*2-center;  //About zero. 
 			//Doubles the distance between the cursor and origin ONLY makes sense in the context of center-out reaching
+			break;
+		case EA_ADAPTIVE:
+			sphere.position=cursor+(.1l*adaptive)*cursor.linepointvec(origin, target);
 			break;
 	}
 	outStream << sphere.position.X() TAB sphere.position.Y() << endl;
@@ -423,4 +444,5 @@ point ControlWidget::loadTrial(int T)
 	std::cout << "Finished Loading Trial " << temptrial << std::endl;
 	double mcorr=min-.02l;
 	return temppoint*(mcorr/1.5l)+center-point(0,mcorr/6l);
+	initialdirectionnoted=false;
 }

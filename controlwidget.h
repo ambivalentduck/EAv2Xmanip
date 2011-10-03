@@ -43,18 +43,19 @@ private:
 	QTextStream outStream, trialStream;
 	
 	double * minJerkParams[6];
-	double viscousity,curl,saddle, inertia,KSpring, kickP, kickD, offsetMag, offsetTau;
-	enum treatments {UNTREATED=0, EA=1, X2=2} treatment;
+	double viscousity,curl,saddle, inertia,KSpring, kickP, kickD, offsetMag, offsetTau, adaptive;
+	enum treatments {UNTREATED=0, EA=1, X2=2, EA_ADAPTIVE=3} treatment;
 	enum stimuli {UNSTIMULATED=0, CURL=1, SADDLE=2, ROTATION45=3, ROTATIONFLIP=4} stimulus;
 	enum GameState {acquireTarget=0, inTarget=1} state;
 	std::vector<QWidget*> grayList;
 	std::vector<DisplayWidget::Sphere> sphereVec;
 	std::deque<timespec> times;
 	std::deque<QByteArray> data; 
+	std::deque<double> initialdirectionerror;
 	DisplayWidget::Sphere sphere;
 
 	timespec zero, now, trialStart, targetAcquired;
-	bool ExperimentRunning, inputReady, outputReady, ignoreInput, leftOrigin;
+	bool ExperimentRunning, inputReady, outputReady, ignoreInput, leftOrigin, initialdirectionnoted;
 	int trial, subject;
 	point origin, cursor, velocity, accel, target, force, center;
 	double min, visualdelay;
