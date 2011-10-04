@@ -19,8 +19,8 @@
 #define PROJECTORY .670401l
 #define PROJECTORZ 1.25l
 
-#define LOWERBAR .50l
-#define UPPERBAR .65l
+#define LOWERBAR .40l
+#define UPPERBAR .50l
 
 class DisplayWidget : public QGLWidget
 {

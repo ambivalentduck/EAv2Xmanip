@@ -66,6 +66,7 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	treatmentBox->insertItem(0,"Unstimulated");
 	treatmentBox->insertItem(1,"EA");
 	treatmentBox->insertItem(2,"2X");
+	treatmentBox->insertItem(3,"EA: Adaptive");
 	grayList.push_back(treatmentBox);
 	treatment=UNTREATED;
 	connect(treatmentBox, SIGNAL(activated(int)), this, SLOT(setTreatment(int)));
@@ -78,6 +79,13 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 	visualdelay=-1;
 	connect(delayBox, SIGNAL(valueChanged(double)), this, SLOT(setDelay(double)));
 
+	layout->addRow(tr("Adaptive EA:"), adaptiveBox=new QDoubleSpinBox(this));
+	adaptiveBox->setValue(0);
+	adaptiveBox->setMaximum(20);
+	adaptiveBox->setMinimum(-1);
+	adaptiveBox->setDecimals(3);
+	adaptive=0;
+	connect(adaptiveBox, SIGNAL(valueChanged(double)), this, SLOT(setAdaptive(double)));
 
 
 	setLayout(layout);
@@ -155,7 +163,6 @@ ControlWidget::ControlWidget(QDesktopWidget * qdw) : QWidget(qdw->screen(qdw->pr
 		sphereVec.push_back(sphere);
 	}
 
-	adaptive=0;
 	curl=0;
 	saddle=0;
 	trial=0;
@@ -233,7 +240,7 @@ void ControlWidget::readPending()
 		if ((now-trialStart)>initialDirectionTime)
 		{
 			initialdirectionnoted=true;
-			initialdirectionerror.push_back(atan2(cursor.Y()-origin.Y(),cursor.X()-origin.X()));
+			initialdirectionerror.push_back(atan2(cursor.Y()-origin.Y(),cursor.X()-origin.X())-atan2(target.Y()-origin.Y(),target.X()-origin.X()));
 			while(initialdirectionerror.size()>6) initialdirectionerror.pop_front();
 			if (initialdirectionerror.size()==6)
 			{
@@ -242,7 +249,8 @@ void ControlWidget::readPending()
 				double delta_ide=(newer-older)/newer;
 				if (delta_ide>.1) adaptive--;
 				else if(delta_ide<-.0909) adaptive++;
-					
+				if (adaptive<-1) adaptive=-1;
+				adaptiveBox->setValue(adaptive/10);
 			}
 		}
 
@@ -297,7 +305,7 @@ void ControlWidget::readPending()
 			//Doubles the distance between the cursor and origin ONLY makes sense in the context of center-out reaching
 			break;
 	}
-	outStream << sphere.position.X() TAB sphere.position.Y() << endl;
+	outStream << sphere.position.X() TAB sphere.position.Y() TAB adaptive << endl;
 	sphere.radius=cRadius;
 	sphereVec.push_back(sphere);
 	userWidget->setSpheres(sphereVec);
@@ -435,8 +443,9 @@ point ControlWidget::loadTrial(int T)
 	visualdelay=tempdelay;
 	stimulus=stimuli(tempstim);
 	point temppoint=point(tempx,-tempy);
-	if (temptreat==3) {temptreat=2; temppoint*=2;}
-	if (temptreat==4) {temptreat=0; temppoint/=2l;}
+	//Lines were accomodating 2x vc vs 2x hc, but this is dumb.  Should change in input files
+	//if (temptreat==3) {temptreat=2; temppoint*=2;} 
+	//if (temptreat==4) {temptreat=0; temppoint/=2l;}
 	treatment=treatments(temptreat);
 	trialNumBox->setValue(T);
 	stimulusBox->setCurrentIndex(tempstim);
@@ -444,5 +453,5 @@ point ControlWidget::loadTrial(int T)
 	delayBox->setValue(visualdelay);
 	std::cout << "Finished Loading Trial " << temptrial << std::endl;
 	double mcorr=min-.02l;
-	return temppoint*(mcorr/1.5l)+center-point(0,mcorr/6l);
+	return temppoint*(mcorr/1.5l)+center-point(0,mcorr/6l-0.05l);
 }

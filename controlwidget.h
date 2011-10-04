@@ -24,6 +24,7 @@ public:
 private:
 	QSpinBox *trialNumBox, *subjectBox;
 	QDoubleSpinBox *delayBox;
+	QDoubleSpinBox *adaptiveBox;
 	QPushButton *startButton; 	
 	QComboBox *stimulusBox, *treatmentBox;
 	QFormLayout * layout;
@@ -72,6 +73,7 @@ public slots:
 	void setTreatment(int i) {treatment=treatments(i);}
 	void setStimulus(int i) {stimulus=stimuli(i);}
 	void setDelay(double d) {if (d<=0.0) visualdelay=-1; else visualdelay=d;}
+	void setAdaptive(double d) {adaptive=d*10;}
 	
 };
 
